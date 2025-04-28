@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E41605992DBF8AF600B662EE /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E41605982DBF8AEF00B662EE /* README.md */; };
 		FA7FA9AF2DBF874300AEE0B6 /* .gitattributes in Resources */ = {isa = PBXBuildFile; fileRef = FA7FA9AE2DBF873C00AEE0B6 /* .gitattributes */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +29,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E41605982DBF8AEF00B662EE /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		FA7FA9842DBF84CE00AEE0B6 /* good-wave.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "good-wave.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA7FA9912DBF84CF00AEE0B6 /* good-waveTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "good-waveTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA7FA99B2DBF84CF00AEE0B6 /* good-waveUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "good-waveUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -80,6 +82,7 @@
 		FA7FA97B2DBF84CE00AEE0B6 = {
 			isa = PBXGroup;
 			children = (
+				E41605982DBF8AEF00B662EE /* README.md */,
 				FA7FA9AE2DBF873C00AEE0B6 /* .gitattributes */,
 				FA7FA9862DBF84CE00AEE0B6 /* good-wave */,
 				FA7FA9942DBF84CF00AEE0B6 /* good-waveTests */,
@@ -218,6 +221,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E41605992DBF8AF600B662EE /* README.md in Resources */,
 				FA7FA9AF2DBF874300AEE0B6 /* .gitattributes in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
