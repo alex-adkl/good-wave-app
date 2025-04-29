@@ -1,10 +1,3 @@
-//
-//  MapView.swift
-//  good-wave
-//
-//  Created by Alejandra ADEIKALAM on 28/04/2025.
-//
-
 import SwiftUI
 import MapKit
 
