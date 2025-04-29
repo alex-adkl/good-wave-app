@@ -53,7 +53,7 @@ struct SpotCardView: View {
                     .font(.headline)
                 Spacer()
                 Text("★ \(spot.rating)")
-                    .foregroundColor(.red)
+                    .foregroundColor(.red.opacity(0.7))
             }
             HStack {
                 Text(spot.dateRange)

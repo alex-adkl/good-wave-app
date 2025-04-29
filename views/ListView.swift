@@ -26,6 +26,9 @@ struct ListView: View {
                         LazyVStack(spacing: 16) {
                             ForEach(spots) { spot in
                                 SpotCardView(spot: spot)
+                                    .frame(maxWidth: .infinity)
+                                    
+                                    
                             }
                         }.padding()
                     }
@@ -46,4 +49,5 @@ struct ListView: View {
 #Preview {
     ListView()
 }
+
 
