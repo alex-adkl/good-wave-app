@@ -26,6 +26,7 @@ struct SurfSpotFields: Codable {
     let magicSeaweedLink: String
     let photos: [Photo]
     let peakSurfSeasonBegins: String
+    let forecastURL: String?
 
     var formattedPeakSurfSeasonBegins: String {
         return formatDate(peakSurfSeasonBegins)
@@ -66,6 +67,7 @@ struct SurfSpotFields: Codable {
         case peakSurfSeasonEnds = "Peak Surf Season Ends"
         case destinationStateCountry = "Destination State/Country"
         case address = "Address"
+        case forecastURL = "Forecast URL"
     }
 }
 

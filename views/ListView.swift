@@ -8,7 +8,7 @@ import SwiftUI
 
 struct ListView: View {
     @StateObject private var viewModel = SurfSpotViewModel()
-
+    
     var body: some View {
         TabView {
             NavigationView {
@@ -19,33 +19,37 @@ struct ListView: View {
                     
                     SpotTypeSelector()
                     
-                   // Text("Loaded \(viewModel.surfSpots.count) spots")
-
+                    // Text("Loaded \(viewModel.surfSpots.count) spots")
+                    
                     ScrollView {
                         LazyVStack(spacing: 16) {
                             ForEach(viewModel.surfSpots) { spot in
-                                SpotCardView(spot: spot)
-                                    .frame(maxWidth: .infinity)
+                                NavigationLink(destination: ContentView(spot: spot)) {
+                                    SpotCardView(spot: spot)
+                                        .frame(maxWidth: .infinity)
                                     
                                     
-                            }
-                        }.padding()
+                                }
+                            }.padding()
+                        }
                     }
+                    .navigationBarTitleDisplayMode(.inline)
                 }
-                .navigationBarTitleDisplayMode(.inline)
+                .tabItem {
+                    Label("Explore", systemImage: "magnifyingglass")
+                }
+                
+                Text("Saved").tabItem { Label("Saved", systemImage: "heart") }
+                Text("Profile").tabItem { Label("Profile", systemImage: "person") }
+                Text("Share").tabItem { Label("Share", systemImage: "square.and.arrow.up") }
             }
-            .tabItem {
-                Label("Explore", systemImage: "magnifyingglass")
-            }
-
-            Text("Saved").tabItem { Label("Saved", systemImage: "heart") }
-            Text("Profile").tabItem { Label("Profile", systemImage: "person") }
-            Text("Share").tabItem { Label("Share", systemImage: "square.and.arrow.up") }
         }
     }
-}
-
-#Preview {
-    ListView()
+    
+    struct ListView_Previews: PreviewProvider {
+        static var previews: some View {
+            ListView()
+        }
+    }
 }
 
