@@ -37,6 +37,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		E4217B322DC22C3F00762137 /* Models */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E4217B362DC22D1600762137 /* viewModels */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = viewModels;
+			sourceTree = "<group>";
+		};
 		FA7FA9942DBF84CF00AEE0B6 /* good-waveTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "good-waveTests";
@@ -60,16 +70,6 @@
 		FA7FA9C72DC0CB7400AEE0B6 /* assets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = assets;
-			sourceTree = "<group>";
-		};
-		FA7FA9C92DC0D57700AEE0B6 /* models */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = models;
-			sourceTree = "<group>";
-		};
-		FA7FA9CA2DC0D58900AEE0B6 /* viewModels */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = viewModels;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -102,8 +102,8 @@
 		FA7FA97B2DBF84CE00AEE0B6 = {
 			isa = PBXGroup;
 			children = (
-				FA7FA9CA2DC0D58900AEE0B6 /* viewModels */,
-				FA7FA9C92DC0D57700AEE0B6 /* models */,
+				E4217B362DC22D1600762137 /* viewModels */,
+				E4217B322DC22C3F00762137 /* Models */,
 				FA7FA9C72DC0CB7400AEE0B6 /* assets */,
 				FA7FA9C62DC0CB5F00AEE0B6 /* app */,
 				FA7FA9C52DC0CB4400AEE0B6 /* views */,
@@ -141,11 +141,11 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				E4217B322DC22C3F00762137 /* Models */,
+				E4217B362DC22D1600762137 /* viewModels */,
 				FA7FA9C52DC0CB4400AEE0B6 /* views */,
 				FA7FA9C62DC0CB5F00AEE0B6 /* app */,
 				FA7FA9C72DC0CB7400AEE0B6 /* assets */,
-				FA7FA9C92DC0D57700AEE0B6 /* models */,
-				FA7FA9CA2DC0D58900AEE0B6 /* viewModels */,
 			);
 			name = "good-wave";
 			packageProductDependencies = (
