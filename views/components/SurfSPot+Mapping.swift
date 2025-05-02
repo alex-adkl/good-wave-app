@@ -12,7 +12,7 @@ extension SurfSpot {
             imageName: record.fields.photos.first?.url ?? "placeholder",
             title: record.fields.destination,
             location: record.fields.destinationStateCountry,
-            dateRange: "\(record.fields.peakSurfSeasonBegins) - \(record.fields.peakSurfSeasonEnds)",
+            dateRange: "\(record.fields.formattedPeakSurfSeasonBegins) - \(record.fields.formattedPeakSurfSeasonEnds)",
             rating: record.fields.difficultyLevel,
             condition: "Good" 
         )
