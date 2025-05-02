@@ -8,6 +8,7 @@ import SwiftUI
 
 struct ContentView: View {
     let spot: SurfSpot
+    @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -15,17 +16,7 @@ struct ContentView: View {
                 .ignoresSafeArea(edges: .top)
                 .frame(height: 210)
 
-            VStack {
-                HStack {
-                    BackButton {
-                        // action de retour
-                    }
-                    Spacer()
-                }
-                Spacer()
-            }
-            .padding()
-
+            
             VStack {
                 Spacer()
                 CircleImage(url: URL(string: spot.imageName))
@@ -59,7 +50,7 @@ struct ContentView: View {
                             .font(.body)
                         Spacer()
                         HStack(spacing: 2) {
-                            ForEach(0..<Int(spot.rating)!, id: \.self) { _ in
+                            ForEach(0..<spot.rating, id: \.self) { _ in
                                 Image(systemName: "star.fill")
                                     .foregroundColor(.yellow)
                             }

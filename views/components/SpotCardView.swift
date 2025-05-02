@@ -14,6 +14,7 @@ struct SurfSpot: Identifiable {
     let dateRange: String
     let rating: Int
     let condition: String
+    let forecastURL: String
 }
 
 struct SpotCardView: View {
@@ -77,6 +78,7 @@ struct SpotCardView: View {
         location: "Oahu, Hawaii",
         dateRange: "22 July - 31 August",
         rating: 4,
-        condition: "POOR"
+        condition: "POOR",
+        forecastURL: "https://www.surfline.com/surf-report/pipeline/..."
     ))
 }

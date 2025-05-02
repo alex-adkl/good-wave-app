@@ -14,7 +14,8 @@ extension SurfSpot {
             location: record.fields.destinationStateCountry,
             dateRange: "\(record.fields.formattedPeakSurfSeasonBegins) - \(record.fields.formattedPeakSurfSeasonEnds)",
             rating: record.fields.difficultyLevel,
-            condition: "Good" 
+            condition: "Good",
+            forecastURL: record.fields.forecastURL ?? "https://www.surfline.com" 
         )
     }
 }
