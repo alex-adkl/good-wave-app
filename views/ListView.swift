@@ -7,10 +7,7 @@
 import SwiftUI
 
 struct ListView: View {
-    let spots: [SurfSpot] = [
-        SurfSpot(imageName: "UXSpv5pRxVI8yxQyAPt28tObygpmSCRMaaxsLnfm2Oc", title: "Pipeline", location: "Oahu, Hawaii", dateRange: "22 July - 31 August", rating: 4, condition: "POOR"),
-        SurfSpot(imageName: "UXSpv5pRxVI8yxQyAPt28tObygpmSCRMaaxsLnfm2Oc", title: "Pipeline", location: "Oahu, Hawaii", dateRange: "22 July - 31 August", rating: 4, condition: "POOR")
-    ]
+    @StateObject private var viewModel = SurfSpotViewModel()
 
     var body: some View {
         TabView {
@@ -21,10 +18,12 @@ struct ListView: View {
                         .padding(.vertical, 7)
                     
                     SpotTypeSelector()
+                    
+                   // Text("Loaded \(viewModel.surfSpots.count) spots")
 
                     ScrollView {
                         LazyVStack(spacing: 16) {
-                            ForEach(spots) { spot in
+                            ForEach(viewModel.surfSpots) { spot in
                                 SpotCardView(spot: spot)
                                     .frame(maxWidth: .infinity)
                                     
@@ -49,5 +48,4 @@ struct ListView: View {
 #Preview {
     ListView()
 }
-
 
