@@ -23,9 +23,10 @@ struct ListView: View {
 
                     ScrollView {
                         LazyVStack(spacing: 16) {
-                            ForEach(viewModel.surfSpots) { spot in
-                                SpotCardView(spot: spot)
-                                    .frame(maxWidth: .infinity)
+                                                ForEach(viewModel.surfSpots) { spot in
+                                                    NavigationLink(destination: DetailView(spot: spot)) {
+                                                        SpotCardView(spot: spot)
+                                                            .frame(maxWidth: .infinity)
                                     
                                     
                             }

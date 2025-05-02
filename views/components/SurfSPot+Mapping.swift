@@ -18,3 +18,15 @@ extension SurfSpot {
         )
     }
 }
+
+extension SurfSpot {
+    static let example = SurfSpot(
+        imageName: "https://images.unsplash.com/photo-1455264745730-cb3b76250ae8",
+        title: "Pipeline",
+        location: "Oahu, Hawaii",
+        dateRange: "22/07 - 01/08",
+        rating: 4,
+        condition: "Reef Break",
+        forecastURL: "https://www.surfline.com/surf-report/pipeline/..."
+    )
+}
