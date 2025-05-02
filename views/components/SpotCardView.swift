@@ -23,9 +23,7 @@ struct SpotCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             ZStack(alignment: .topLeading) {
-                Image(spot.imageName)
-                    .resizable()
-                    .scaledToFill()
+                AsyncImageView(url: URL(string: spot.imageName), placeholder: "figure.surfing")
                     .frame(height: 200)
                     .frame(width: 370)
                     .cornerRadius(16)
