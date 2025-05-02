@@ -31,6 +31,7 @@ struct SpotCardView: View {
 
                 Text("Peeps favorite")
                     .font(.caption)
+                    .foregroundColor(.black)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
                     .background(Color.white)
@@ -50,6 +51,7 @@ struct SpotCardView: View {
             HStack {
                 Text("\(spot.title) • \(spot.location)")
                     .font(.headline)
+                    .foregroundColor(.black)
                 Spacer()
                 Text("★ \(spot.rating)")
                     .foregroundColor(.red.opacity(0.7))
@@ -62,6 +64,7 @@ struct SpotCardView: View {
                 Circle().fill(Color.orange).frame(width: 8, height: 8)
                 Text(spot.condition.uppercased())
                     .bold()
+                    .foregroundColor(.black)
             }
 
         }
