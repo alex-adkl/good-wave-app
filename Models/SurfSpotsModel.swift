@@ -28,35 +28,26 @@ struct SurfSpotFields: Codable {
     let peakSurfSeasonBegins: String
 
     var formattedPeakSurfSeasonBegins: String {
-        let isoFormatter = DateFormatter()
-        isoFormatter.dateFormat = "yyyy-MM-dd"
-        isoFormatter.locale = Locale(identifier: "fr_FR")
-
-        let displayFormatter = DateFormatter()
-        displayFormatter.dateFormat = "d MMMM"
-        displayFormatter.locale = Locale(identifier: "fr_FR")
-
-        if let date = isoFormatter.date(from: peakSurfSeasonBegins) {
-            return displayFormatter.string(from: date)
-        } else {
-            return peakSurfSeasonBegins
-        }
+        return formatDate(peakSurfSeasonBegins)
     }
 
     var formattedPeakSurfSeasonEnds: String {
+        return formatDate(peakSurfSeasonEnds)
+    }
+
+    private func formatDate(_ dateString: String) -> String {
         let isoFormatter = DateFormatter()
         isoFormatter.dateFormat = "yyyy-MM-dd"
-        isoFormatter.locale = Locale(identifier: "fr_FR")
+        isoFormatter.locale = Locale(identifier: "en_US")
 
         let displayFormatter = DateFormatter()
-        displayFormatter.dateFormat = "d MMMM"
-        displayFormatter.locale = Locale(identifier: "fr_FR")
+        displayFormatter.dateFormat = "MMMM d"
+        displayFormatter.locale = Locale(identifier: "en_US")
 
-        if let date = isoFormatter.date(from: peakSurfSeasonEnds) {
+        if let date = isoFormatter.date(from: dateString) {
             return displayFormatter.string(from: date)
-        } else {
-            return peakSurfSeasonEnds
         }
+        return dateString
     }
 
     let peakSurfSeasonEnds: String
