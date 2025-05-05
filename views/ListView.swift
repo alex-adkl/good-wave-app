@@ -9,53 +9,80 @@ import SwiftUI
 struct ListView: View {
     @StateObject private var viewModel = SurfSpotViewModel()
     @State private var selectedTab = 0
+    @State private var showTabBar = true
+    @State private var showSplash = true
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            TabView(selection: $selectedTab) {
-                NavigationView {
-                    VStack {
-                        SearchBar()
-                            .padding(.vertical, 7)
-                        
-                        SpotTypeSelector()
-                        
-                        // Text("Loaded \(viewModel.surfSpots.count) spots")
-                        
-                        ScrollView {
-                            LazyVStack(spacing: 16) {
-                                ForEach(viewModel.surfSpots) { spot in
-                                    NavigationLink(destination: ContentView(spot: spot)) {
-                                        SpotCardView(spot: spot)
-                                            .frame(maxWidth: .infinity)
+        ZStack {
+            if showSplash {
+                SplashScreen()
+                    .transition(.opacity)
+            } else {
+                ZStack(alignment: .bottom) {
+                    TabView(selection: $selectedTab) {
+                        NavigationView {
+                            VStack {
+                                SearchBar()
+                                    .padding(.vertical, 7)
+                                
+                                SpotTypeSelector()
+                                
+                                ScrollView {
+                                    LazyVStack(spacing: 16) {
+                                        ForEach(viewModel.surfSpots) { spot in
+                                            NavigationLink(destination: ContentView(spot: spot)) {
+                                                SpotCardView(spot: spot)
+                                                    .frame(maxWidth: .infinity)
+                                            }
+                                        }.padding()
                                     }
-                                }.padding()
+                                    .padding(.bottom, 45)
+                                }
+                                .simultaneousGesture(
+                                    DragGesture()
+                                        .onChanged { _ in
+                                            withAnimation(.easeInOut(duration: 0.2)) {
+                                                showTabBar = false
+                                            }
+                                        }
+                                        .onEnded { _ in
+                                            withAnimation(.easeInOut(duration: 0.2)) {
+                                                showTabBar = true
+                                            }
+                                        }
+                                )
+                                .navigationBarTitleDisplayMode(.inline)
                             }
                         }
-                        .navigationBarTitleDisplayMode(.inline)
+                        .tag(0)
+                        
+                        Text("Saved")
+                            .tag(1)
+                        
+                        Text("Profile")
+                            .tag(2)
+                        
+                        Text("Share")
+                            .tag(3)
+                    }
+                    .tabViewStyle(.page(indexDisplayMode: .never))
+                    
+                    CustomTabBar(selectedTab: $selectedTab)
+                        .opacity(showTabBar ? 1 : 0)
+                        .animation(.easeInOut(duration: 0.2), value: showTabBar)
+                }
+                .transition(.opacity)
+            }
+        }
+        .onAppear {
+            // Attendre que les données soient chargées avant de cacher le splash screen
+            viewModel.loadSurfSpots {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    withAnimation {
+                        showSplash = false
                     }
                 }
-                .tag(0)
-                
-                Text("Saved")
-                    .tag(1)
-                
-                Text("Profile")
-                    .tag(2)
-                
-                Text("Share")
-                    .tag(3)
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            
-            CustomTabBar(selectedTab: $selectedTab)
-        }
-        .ignoresSafeArea(.keyboard, edges: .bottom)
-    }
-    
-    struct ListView_Previews: PreviewProvider {
-        static var previews: some View {
-            ListView()
         }
     }
 }
