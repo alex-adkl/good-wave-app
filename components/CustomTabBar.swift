@@ -28,16 +28,43 @@ struct CustomTabBar: View {
 
     @ViewBuilder
     private func tabBarItem(icon: String, label: String, index: Int) -> some View {
-        VStack(spacing: 4) {
-            Image(systemName: icon)
-                .font(.system(size: 22, weight: .regular))
-                .foregroundColor(selectedTab == index ? .black : .gray)
-            Text(label)
-                .font(.caption)
-                .foregroundColor(selectedTab == index ? .black : .gray)
-        }
-        .onTapGesture {
-            selectedTab = index
+        if index == 0 {
+            // Style spécial pour l'onglet Explore
+            VStack(spacing: 4) {
+                ZStack {
+                    Circle()
+                        .fill(Color.white)
+                        .frame(width: 44, height: 44)
+                        .overlay(
+                            Circle()
+                                .stroke(Color(.systemGray5), lineWidth: 1)
+                        )
+                        .shadow(color: Color(.systemGray3).opacity(0.4), radius: 3, x: 0, y: 1)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 22, weight: .regular))
+                        .foregroundColor(.black)
+                }
+                Text(label)
+                    .font(.caption)
+                    .foregroundColor(.black)
+            }
+            .onTapGesture {
+                selectedTab = index
+            }
+        } else {
+            // Style normal pour les autres onglets
+            VStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 22, weight: .regular))
+                    .foregroundColor(selectedTab == index ? .black : .gray)
+                Text(label)
+                    .font(.caption)
+                    .foregroundColor(selectedTab == index ? .black : .gray)
+            }
+            .onTapGesture {
+                selectedTab = index
+            }
         }
     }
 }

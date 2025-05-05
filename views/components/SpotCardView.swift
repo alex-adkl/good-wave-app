@@ -61,7 +61,7 @@ struct SpotCardView: View {
                     .font(.subheadline)
                     .foregroundColor(.gray)
                 Spacer()
-                Circle().fill(Color.orange).frame(width: 8, height: 8)
+                Circle().fill(Color.green).frame(width: 8, height: 8)
                 Text(spot.condition.uppercased())
                     .bold()
                     .foregroundColor(.black)
