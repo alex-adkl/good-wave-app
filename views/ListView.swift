@@ -62,7 +62,7 @@ struct ListView: View {
                         Text("Profile")
                             .tag(2)
                         
-                        Text("Share")
+                        ShareSpotView(showTabBar: $showTabBar)
                             .tag(3)
                     }
                     .tabViewStyle(.page(indexDisplayMode: .never))
@@ -75,7 +75,6 @@ struct ListView: View {
             }
         }
         .onAppear {
-            // Attendre que les données soient chargées avant de cacher le splash screen
             viewModel.loadSurfSpots {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     withAnimation {

@@ -16,6 +16,7 @@ struct CustomTabBar: View {
         .padding(.horizontal, 24)
         .padding(.vertical, 14)
         .background(
+            // Glassmorphism effect
             BlurView(style: .systemUltraThinMaterial)
                 .background(Color.white.opacity(0.25))
                 .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
@@ -24,11 +25,12 @@ struct CustomTabBar: View {
         .padding(.horizontal, 12)
         .padding(.bottom, -15)
     }
+
     @ViewBuilder
     private func tabBarItem(icon: String, label: String, index: Int) -> some View {
-        if index == 0 {
-            VStack(spacing: 4) {
-                ZStack {
+        VStack(spacing: 4) {
+            ZStack {
+                if selectedTab == index {
                     Circle()
                         .fill(Color.white)
                         .frame(width: 44, height: 44)
@@ -37,34 +39,25 @@ struct CustomTabBar: View {
                                 .stroke(Color(.systemGray5), lineWidth: 1)
                         )
                         .shadow(color: Color(.systemGray3).opacity(0.4), radius: 3, x: 0, y: 1)
-                    
-                    Image(systemName: icon)
-                        .font(.system(size: 22, weight: .regular))
-                        .foregroundColor(.black)
                 }
-                Text(label)
-                    .font(.caption)
-                    .foregroundColor(.black)
-            }
-            .onTapGesture {
-                selectedTab = index
-            }
-        } else {
-            VStack(spacing: 4) {
+                
                 Image(systemName: icon)
                     .font(.system(size: 22, weight: .regular))
-                    .foregroundColor(selectedTab == index ? .black : .black)
-                Text(label)
-                    .font(.caption)
-                    .foregroundColor(selectedTab == index ? .black : .black)
+                    .foregroundColor(.black)
             }
-            .onTapGesture {
+            Text(label)
+                .font(.caption)
+                .foregroundColor(.black)
+        }
+        .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.2)) {
                 selectedTab = index
             }
         }
     }
 }
 
+// Helper for glassmorphism blur
 struct BlurView: UIViewRepresentable {
     var style: UIBlurEffect.Style
     func makeUIView(context: Context) -> UIVisualEffectView {
@@ -75,4 +68,4 @@ struct BlurView: UIViewRepresentable {
 
 #Preview {
     CustomTabBar(selectedTab: .constant(0))
-}
+} 
