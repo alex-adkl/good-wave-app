@@ -6,17 +6,6 @@
 //
 import SwiftUI
 
-struct SurfSpot: Identifiable {
-    let id = UUID()
-    let imageName: String
-    let title: String
-    let location: String
-    let dateRange: String
-    let rating: Int
-    let condition: String
-    let forecastURL: String
-}
-
 struct SpotCardView: View {
     let spot: SurfSpot
 
@@ -48,6 +37,7 @@ struct SpotCardView: View {
                         .padding(10)
                 }
             }
+            
             HStack {
                 Text("\(spot.title) • \(spot.location)")
                     .font(.headline)
@@ -56,6 +46,7 @@ struct SpotCardView: View {
                 Text("★ \(spot.rating)")
                     .foregroundColor(.red.opacity(0.7))
             }
+            
             HStack {
                 Text(spot.dateRange)
                     .font(.subheadline)
@@ -66,7 +57,6 @@ struct SpotCardView: View {
                     .bold()
                     .foregroundColor(.black)
             }
-
         }
         .padding()
     }
@@ -74,12 +64,15 @@ struct SpotCardView: View {
 
 #Preview {
     SpotCardView(spot: SurfSpot(
-        imageName: "UXSpv5pRxVI8yxQyAPt28tObygpmSCRMaaxsLnfm2Oc",
-        title: "Pipeline",
-        location: "Oahu, Hawaii",
-        dateRange: "22 July - 31 August",
-        rating: 4,
-        condition: "POOR",
-        forecastURL: "https://www.surfline.com/surf-report/pipeline/..."
+        id: "1",
+        fields: SurfSpot.SurfSpotFields(
+            imageURL: "https://example.com/image.jpg",
+            title: "Pipeline",
+            location: "Oahu, Hawaii",
+            dateRange: "22 July - 31 August",
+            rating: 4,
+            condition: "POOR",
+            forecastURL: "https://www.surfline.com/surf-report/pipeline/..."
+        )
     ))
 }
