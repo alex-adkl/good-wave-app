@@ -9,6 +9,7 @@ import Foundation
 
 class SurfSpotViewModel: ObservableObject {
     @Published var surfSpots: [SurfSpot] = []
+    @Published var isLoading = true
 
     init() {
         loadSurfSpots()
