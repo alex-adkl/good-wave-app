@@ -13,7 +13,6 @@ struct ListView: View {
         TabView {
             NavigationView {
                 VStack {
-                    
                     SearchBar()
                         .padding(.vertical, 7)
                     
@@ -27,22 +26,31 @@ struct ListView: View {
                                 NavigationLink(destination: ContentView(spot: spot)) {
                                     SpotCardView(spot: spot)
                                         .frame(maxWidth: .infinity)
-                                    
-                                    
                                 }
                             }.padding()
                         }
                     }
                     .navigationBarTitleDisplayMode(.inline)
                 }
-                .tabItem {
-                    Label("Explore", systemImage: "magnifyingglass")
-                }
-                
-                Text("Saved").tabItem { Label("Saved", systemImage: "heart") }
-                Text("Profile").tabItem { Label("Profile", systemImage: "person") }
-                Text("Share").tabItem { Label("Share", systemImage: "square.and.arrow.up") }
             }
+            .tabItem {
+                Label("Explore", systemImage: "magnifyingglass")
+            }
+            
+            Text("Saved")
+                .tabItem {
+                    Label("Saved", systemImage: "heart")
+                }
+            
+            Text("Profile")
+                .tabItem {
+                    Label("Profile", systemImage: "person")
+                }
+            
+            Text("Share")
+                .tabItem {
+                    Label("Share", systemImage: "square.and.arrow.up")
+                }
         }
     }
     
@@ -51,5 +59,9 @@ struct ListView: View {
             ListView()
         }
     }
+}
+
+#Preview {
+    ListView()
 }
 
