@@ -1,5 +1,5 @@
 //
-//  SufSpotViewModel.swift
+//  SurfSpotViewModel.swift
 //  good-wave
 //
 //  Created by Théo  on 30/04/2025.
@@ -15,37 +15,39 @@ class SurfSpotViewModel: ObservableObject {
         loadSurfSpots()
     }
 
-    func loadSurfSpots(completion: (() -> Void)? = nil) {
-        if let url = Bundle.main.url(forResource: "surfSpots", withExtension: "json") {
+    func loadSurfSpots() {
+        let baseID = "appUTGwQsOG0pTRc8"
+        let tableName = "Surf%20Destinations"
+        let apiKey = "patnTydUsqcjCS3wO.72a9fc74d6485c872cfc16e9328b3b3fa275e54386b9cd7ef842058136b0e1a3" // 🔐 à sécuriser plus tard (ex: dans un fichier .xcconfig)
+
+        guard let url = URL(string: "https://api.airtable.com/v0/\(baseID)/\(tableName)") else {
+            print("URL invalide")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Erreur API: \(error)")
+                return
+            }
+
+            guard let data = data else {
+                print("Aucune donnée reçue")
+                return
+            }
+
             do {
-                let data = try Data(contentsOf: url)
                 let decodedData = try JSONDecoder().decode(SurfSpotsData.self, from: data)
-                self.surfSpots = decodedData.records.map { SurfSpot(from: $0) }
-                
-                // Précharger les images
-                for spot in self.surfSpots {
-                    if let imageUrl = URL(string: spot.imageName) {
-                        URLSession.shared.dataTask(with: imageUrl) { _, _, _ in }.resume()
-                    }
-                }
-                
                 DispatchQueue.main.async {
-                    self.isLoading = false
-                    completion?()
+                    self.surfSpots = decodedData.records.map { SurfSpot(from: $0) }
                 }
             } catch {
-                print("Error decoding JSON: \(error)")
-                DispatchQueue.main.async {
-                    self.isLoading = false
-                    completion?()
-                }
+                print("Erreur de décodage: \(error)")
             }
-        } else {
-            print("surfSpots.json not found.")
-            DispatchQueue.main.async {
-                self.isLoading = false
-                completion?()
-            }
-        }
+        }.resume()
     }
 }

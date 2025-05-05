@@ -34,8 +34,9 @@ struct ListView: View {
                                                 SpotCardView(spot: spot)
                                                     .frame(maxWidth: .infinity)
                                             }
-                                        }.padding()
+                                        }
                                     }
+                                    .padding()
                                     .padding(.bottom, 45)
                                 }
                                 .simultaneousGesture(
@@ -75,11 +76,11 @@ struct ListView: View {
             }
         }
         .onAppear {
-            viewModel.loadSurfSpots {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    withAnimation {
-                        showSplash = false
-                    }
+            viewModel.loadSurfSpots()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                withAnimation {
+                    showSplash = false
                 }
             }
         }
@@ -89,4 +90,3 @@ struct ListView: View {
 #Preview {
     ListView()
 }
-
