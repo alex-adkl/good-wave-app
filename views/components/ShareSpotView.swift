@@ -13,7 +13,7 @@ struct ShareSpotView: View {
     @State private var selectedImage: UIImage?
     @State private var showImagePicker = false
     
-    let spotTypes = ["Reef Break", "Beach Break", "Point Break"]
+    let spotTypes = ["Reef Break", "Beach Break", "Point Break", "Outer Banks"]
     
     var body: some View {
         NavigationView {
@@ -77,7 +77,7 @@ struct ShareSpotView: View {
                             HStack {
                                 ForEach(1...5, id: \.self) { star in
                                     Image(systemName: star <= difficulty ? "star.fill" : "star")
-                                        .foregroundColor(.yellow)
+                                        .foregroundColor(.black)
                                         .onTapGesture {
                                             difficulty = star
                                         }
