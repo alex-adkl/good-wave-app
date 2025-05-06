@@ -18,7 +18,7 @@ class SurfSpotViewModel: ObservableObject {
     func loadSurfSpots() {
         let baseID = "appUTGwQsOG0pTRc8"
         let tableName = "Surf%20Destinations"
-        let apiKey = "patnTydUsqcjCS3wO.72a9fc74d6485c872cfc16e9328b3b3fa275e54386b9cd7ef842058136b0e1a3" // 🔐 à sécuriser plus tard (ex: dans un fichier .xcconfig)
+        let apiKey = APIConfig.apiKey
 
         guard let url = URL(string: "https://api.airtable.com/v0/\(baseID)/\(tableName)") else {
             print("URL invalide")
