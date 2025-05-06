@@ -84,6 +84,7 @@ struct ListView: View {
                             .tag(3)
                     }
                     .tabViewStyle(.page(indexDisplayMode: .never))
+                    .environmentObject(viewModel)
                     
                     CustomTabBar(selectedTab: $selectedTab)
                         .opacity(showTabBar ? 1 : 0)
