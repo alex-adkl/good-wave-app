@@ -15,8 +15,16 @@ struct ListView: View {
     
     var filteredSpots: [SurfSpot] {
         if let selectedType = selectedSpotType {
-            return viewModel.surfSpots.filter { $0.condition == selectedType }
+            let filtered = viewModel.surfSpots.filter { spot in
+                let types = spot.condition.components(separatedBy: ", ")
+                return types.contains(selectedType)
+            }
+            print("Filtered spots count: \(filtered.count)")
+            print("Selected type: \(selectedType)")
+            print("All spots count: \(viewModel.surfSpots.count)")
+            return filtered
         } else {
+            print("No type selected, showing all spots: \(viewModel.surfSpots.count)")
             return viewModel.surfSpots
         }
     }
