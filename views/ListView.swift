@@ -11,6 +11,23 @@ struct ListView: View {
     @State private var selectedTab = 0
     @State private var showTabBar = true
     @State private var showSplash = true
+    @State private var selectedSpotType: String?
+    
+    var filteredSpots: [SurfSpot] {
+        if let selectedType = selectedSpotType {
+            let filtered = viewModel.surfSpots.filter { spot in
+                let types = spot.condition.components(separatedBy: ", ")
+                return types.contains(selectedType)
+            }
+            print("Filtered spots count: \(filtered.count)")
+            print("Selected type: \(selectedType)")
+            print("All spots count: \(viewModel.surfSpots.count)")
+            return filtered
+        } else {
+            print("No type selected, showing all spots: \(viewModel.surfSpots.count)")
+            return viewModel.surfSpots
+        }
+    }
     
     var body: some View {
         ZStack {
@@ -25,11 +42,11 @@ struct ListView: View {
                                 SearchBar()
                                     .padding(.vertical, 7)
                                 
-                                SpotTypeSelector()
+                                SpotTypeSelector(selectedType: $selectedSpotType)
                                 
                                 ScrollView {
-                                    LazyVStack(spacing: 16) {
-                                        ForEach(viewModel.surfSpots) { spot in
+                                    VStack(spacing: 16) {
+                                        ForEach(filteredSpots) { spot in
                                             NavigationLink(destination: ContentView(spot: spot)) {
                                                 SpotCardView(spot: spot)
                                                     .frame(maxWidth: .infinity)
@@ -78,7 +95,7 @@ struct ListView: View {
         .onAppear {
             viewModel.loadSurfSpots()
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 withAnimation {
                     showSplash = false
                 }
