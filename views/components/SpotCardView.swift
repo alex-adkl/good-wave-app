@@ -38,7 +38,7 @@ struct SpotCardView: View {
                 }
             }
             
-            HStack {
+            HStack(alignment: .firstTextBaseline) {
                 Text("\(spot.title) • \(spot.location)")
                     .font(.headline)
                     .foregroundColor(.black)
@@ -66,8 +66,8 @@ struct SpotCardView: View {
         id: "1",
         fields: SurfSpot.SurfSpotFields(
             imageURL: "https://example.com/image.jpg",
-            title: "Pipeline",
-            location: "Oahu, Hawaii",
+            title: "The Bubble",
+            location: "Fuerteventura, Canary Islands",
             dateRange: "22 July - 31 August",
             rating: 4,
             condition: "POOR",

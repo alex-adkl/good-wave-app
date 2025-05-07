@@ -4,6 +4,7 @@
 //
 //  Created by Alejandra ADEIKALAM  on 28/04/2025.
 //
+
 import SwiftUI
 
 struct ContentView: View {
@@ -13,73 +14,87 @@ struct ContentView: View {
     var body: some View {
         ZStack(alignment: .top) {
             MapView()
+                .frame(height: 300)
                 .ignoresSafeArea(edges: .top)
-                .frame(height: 210)
-
+                .zIndex(0) //MapView en arriere-plan
             
-            VStack {
-                Spacer()
-                CircleImage(url: URL(string: spot.imageName))
-                    .offset(y: -130)
-                    .padding(.bottom, -130)
-
-                VStack(alignment: .leading) {
-                    Text(spot.condition)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-
-                    HStack {
-                        Text(spot.title)
-                            .font(.largeTitle)
-                            .bold()
-                            .foregroundColor(.blue)
-                        Spacer()
-                        Text(spot.location)
-                            .font(.headline)
-                    }
-
-                    Divider()
-
-                    Text("About \(spot.title)")
-                        .font(.title2)
-                        .padding(.bottom, 4)
-                        .bold()
-
-                    HStack {
-                        Text("Difficulty level")
-                            .font(.body)
-                        Spacer()
-                        HStack(spacing: 2) {
-                            ForEach(0..<spot.rating, id: \.self) { _ in
-                                Image(systemName: "star.fill")
-                                    .foregroundColor(.yellow)
+            ScrollView {
+                VStack(spacing: 0) {
+                    Color.clear
+                        .frame(height: 210)
+                    
+                    VStack {
+                        CircleImage(url: URL(string: spot.imageName))
+                            .offset(y: -100)
+                            .padding(.bottom, -100)
+                            .zIndex(2)
+                        
+                        VStack(alignment: .leading) {
+                            HStack(alignment: .firstTextBaseline) {
+                                Text(spot.title)
+                                    .font(.largeTitle)
+                                    .bold()
+                                    .foregroundColor(.blue)
+                                
+                                Spacer()
+                                
+                                Text(spot.location)
+                                    .font(.headline)
                             }
-                        }
-                        .font(.caption)
-                    }
-                    .padding(.vertical, 0.5)
+                            
+                            Text(spot.condition)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .padding(.bottom, 12)
 
-                    HStack {
-                        Text("Peak surf season")
-                            .font(.body)
-                        Spacer()
-                        Text(spot.dateRange)
-                            .font(.body)
-                    }
-                    .padding(.vertical, 0.5)
+                            Divider()
 
-                    HStack {
-                        Link(destination: URL(string: spot.forecastURL)!) {
-                            Label("See surf forecast", systemImage: "arrow.up.right.circle")
-                                .foregroundColor(.blue)
-                                .font(.body)
+                            Text("About \(spot.title)")
+                                .font(.title2)
+                                .padding(.top, 12)
+                                .padding(.bottom, 4)
+                                .bold()
+
+                            HStack {
+                                Label("Difficulty level", systemImage: "crown.fill")
+                                    .font(.body)
+                                
+                                Spacer()
+                                HStack(spacing: 2) {
+                                    ForEach(0..<spot.rating, id: \.self) { _ in
+                                        Image(systemName: "star.fill")
+                                            .foregroundColor(.red.opacity(0.8))
+                                            .font(.system(size: 15))
+                                    }
+                                }
+                                .font(.caption)
+                            }
+                            .padding(.vertical, 0.5)
+
+                            HStack {
+                                Label("Peak surf season", systemImage: "figure.surfing")
+                                    .font(.body)
+                                Spacer()
+                                Text(spot.dateRange)
+                                    .font(.body)
+                            }
+                            .padding(.vertical, 0.5)
+
+                            HStack {
+                                Link(destination: URL(string: spot.forecastURL)!) {
+                                    Label("See surf forecast", systemImage: "arrow.up.right.circle")
+                                        .foregroundColor(.blue)
+                                        .font(.body)
+                                        .padding(.vertical, 20)
+                                }
+                            }
+                            .font(.caption)
+                            .padding(.vertical, 0.5)
                         }
+                        .padding()
                     }
-                    .font(.caption)
-                    .padding(.vertical, 0.5)
+                    .background(Color.white)
                 }
-                .padding()
-                Spacer()
             }
         }
     }
