@@ -7,14 +7,19 @@
 import SwiftUI
 
 struct SearchBar: View {
+    @Binding var searchText: String
+    var onSearch: (String) -> Void
+    
     var body: some View {
         ZStack(alignment: .trailing) {
-            // Background bar
             HStack {
-                Spacer()
-                Text("Research a spot")
-                    .foregroundColor(.black)
-                Spacer()
+                TextField("Research a spot", text: $searchText)
+                    .textFieldStyle(PlainTextFieldStyle())
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 16)
+                    .onChange(of: searchText) { newValue in
+                        onSearch(newValue)
+                    }
             }
             .frame(height: 44)
             .frame(maxWidth: 280)
@@ -45,5 +50,5 @@ struct SearchBar: View {
 }
 
 #Preview {
-    SearchBar()
+    SearchBar(searchText: .constant(""), onSearch: { _ in })
 }

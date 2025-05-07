@@ -12,21 +12,26 @@ struct ListView: View {
     @State private var showTabBar = true
     @State private var showSplash = true
     @State private var selectedSpotType: String?
+    @State private var searchText = ""
     
     var filteredSpots: [SurfSpot] {
+        var spots = viewModel.surfSpots
+        
         if let selectedType = selectedSpotType {
-            let filtered = viewModel.surfSpots.filter { spot in
+            spots = spots.filter { spot in
                 let types = spot.condition.components(separatedBy: ", ")
                 return types.contains(selectedType)
             }
-            print("Filtered spots count: \(filtered.count)")
-            print("Selected type: \(selectedType)")
-            print("All spots count: \(viewModel.surfSpots.count)")
-            return filtered
-        } else {
-            print("No type selected, showing all spots: \(viewModel.surfSpots.count)")
-            return viewModel.surfSpots
         }
+        
+        if !searchText.isEmpty {
+            spots = spots.filter { spot in
+                spot.title.localizedCaseInsensitiveContains(searchText) ||
+                spot.location.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+        
+        return spots
     }
     
     var body: some View {
@@ -39,7 +44,7 @@ struct ListView: View {
                     TabView(selection: $selectedTab) {
                         NavigationView {
                             VStack {
-                                SearchBar()
+                                SearchBar(searchText: $searchText) { _ in }
                                     .padding(.vertical, 7)
                                 
                                 SpotTypeSelector(selectedType: $selectedSpotType)
