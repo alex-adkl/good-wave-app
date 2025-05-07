@@ -13,27 +13,27 @@ struct SpotTypeSelector: View {
         VStack {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 40) {
-                    VStack {
-                        Image(systemName: "fish")
-                        Text("Reef Break")
-                            .padding(.bottom)
-                            .overlay(
-                                Rectangle()
-                                    .frame(height: 3)
+                VStack {
+                    Image(systemName: "fish")
+                    Text("Reef Break")
+                        .padding(.bottom)
+                        .overlay(
+                            Rectangle()
+                                .frame(height: 3)
                                     .foregroundColor(selectedType == "Reef Break" ? .black : .clear)
-                                    .padding(.top,3),
-                                alignment: .bottom
-                            )
-                    }
+                                .padding(.top,3),
+                            alignment: .bottom
+                        )
+                }
                     .foregroundColor(selectedType == "Reef Break" ? .black : .gray)
                     .onTapGesture {
                         selectedType = selectedType == "Reef Break" ? nil : "Reef Break"
                     }
 
-                    VStack {
-                        Image(systemName: "beach.umbrella")
-                        Text("Beach Break")
-                            .padding(.bottom)
+                VStack {
+                    Image(systemName: "beach.umbrella")
+                    Text("Beach Break")
+                        .padding(.bottom)
                             .overlay(
                                 Rectangle()
                                     .frame(height: 3)
@@ -41,16 +41,16 @@ struct SpotTypeSelector: View {
                                     .padding(.top,3),
                                 alignment: .bottom
                             )
-                    }
+                }
                     .foregroundColor(selectedType == "Beach Break" ? .black : .gray)
                     .onTapGesture {
                         selectedType = selectedType == "Beach Break" ? nil : "Beach Break"
                     }
 
-                    VStack {
-                        Image(systemName: "button.angledtop.vertical.left")
-                        Text("Point Break")
-                            .padding(.bottom)
+                VStack {
+                    Image(systemName: "button.angledtop.vertical.left")
+                    Text("Point Break")
+                        .padding(.bottom)
                             .overlay(
                                 Rectangle()
                                     .frame(height: 3)
@@ -58,7 +58,7 @@ struct SpotTypeSelector: View {
                                     .padding(.top,3),
                                 alignment: .bottom
                             )
-                    }
+                }
                     .foregroundColor(selectedType == "Point Break" ? .black : .gray)
                     .onTapGesture {
                         selectedType = selectedType == "Point Break" ? nil : "Point Break"
@@ -82,7 +82,7 @@ struct SpotTypeSelector: View {
                     }
                 }
                 .padding(.horizontal)
-            }
+        }
         }
         .background(Color.white)
         .cornerRadius(10)
