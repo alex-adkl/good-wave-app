@@ -53,20 +53,38 @@ struct ListView: View {
                                         .scaleEffect(1.5)
                                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 } else if let error = viewModel.error {
-                                    VStack {
+                                    VStack(spacing: 15) {
+                                        Image(systemName: "exclamationmark.triangle")
+                                            .font(.system(size: 40))
+                                            .foregroundColor(.red)
+                                        
                                         Text("Erreur de chargement")
                                             .font(.headline)
+                                            .foregroundColor(.red)
+                                        
                                         Text(error)
                                             .font(.subheadline)
                                             .foregroundColor(.red)
-                                        Button("Réessayer") {
+                                            .multilineTextAlignment(.center)
+                                            .padding(.horizontal)
+                                        
+                                        Button(action: {
                                             Task {
                                                 await viewModel.loadSurfSpots()
                                             }
+                                        }) {
+                                            Text("Réessayer")
+                                                .font(.headline)
+                                                .foregroundColor(.white)
+                                                .padding(.horizontal, 30)
+                                                .padding(.vertical, 12)
+                                                .background(Color.blue)
+                                                .cornerRadius(8)
                                         }
-                                        .padding()
+                                        .padding(.top, 10)
                                     }
                                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    .padding()
                                 } else {
                                     ScrollView {
                                         VStack(spacing: 16) {
@@ -94,9 +112,9 @@ struct ListView: View {
                                             }
                                     )
                                 }
-                                .navigationBarTitleDisplayMode(.inline)
                             }
                         }
+                        .navigationBarTitleDisplayMode(.inline)
                         .tag(0)
                         
                         Text("Saved")
