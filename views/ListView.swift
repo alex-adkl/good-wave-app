@@ -19,15 +19,14 @@ struct ListView: View {
         
         if let selectedType = selectedSpotType {
             spots = spots.filter { spot in
-                let types = spot.condition.components(separatedBy: ", ")
-                return types.contains(selectedType)
+                spot.surfBreak.contains(selectedType)
             }
         }
         
         if !searchText.isEmpty {
             spots = spots.filter { spot in
-                spot.title.localizedCaseInsensitiveContains(searchText) ||
-                spot.location.localizedCaseInsensitiveContains(searchText)
+                spot.destination.localizedCaseInsensitiveContains(searchText) ||
+                spot.destinationState.localizedCaseInsensitiveContains(searchText)
             }
         }
         
@@ -49,34 +48,73 @@ struct ListView: View {
                                 
                                 SpotTypeSelector(selectedType: $selectedSpotType)
                                 
-                                ScrollView {
-                                    VStack(spacing: 16) {
-                                        ForEach(filteredSpots) { spot in
-                                            NavigationLink(destination: ContentView(spot: spot)) {
-                                                SpotCardView(spot: spot)
-                                                    .frame(maxWidth: .infinity)
+                                if viewModel.isLoading {
+                                    ProgressView()
+                                        .scaleEffect(1.5)
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                } else if let error = viewModel.error {
+                                    VStack(spacing: 15) {
+                                        Image(systemName: "exclamationmark.triangle")
+                                            .font(.system(size: 40))
+                                            .foregroundColor(.red)
+                                        
+                                        Text("Erreur de chargement")
+                                            .font(.headline)
+                                            .foregroundColor(.red)
+                                        
+                                        Text(error)
+                                            .font(.subheadline)
+                                            .foregroundColor(.red)
+                                            .multilineTextAlignment(.center)
+                                            .padding(.horizontal)
+                                        
+                                        Button(action: {
+                                            Task {
+                                                await viewModel.loadSurfSpots()
                                             }
+                                        }) {
+                                            Text("Réessayer")
+                                                .font(.headline)
+                                                .foregroundColor(.white)
+                                                .padding(.horizontal, 30)
+                                                .padding(.vertical, 12)
+                                                .background(Color.blue)
+                                                .cornerRadius(8)
                                         }
+                                        .padding(.top, 10)
                                     }
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                                     .padding()
-                                    .padding(.bottom, 45)
+                                } else {
+                                    ScrollView {
+                                        VStack(spacing: 16) {
+                                            ForEach(filteredSpots) { spot in
+                                                NavigationLink(destination: ContentView(spot: spot)) {
+                                                    SpotCardView(spot: spot)
+                                                        .frame(maxWidth: .infinity)
+                                                }
+                                            }
+                                        }
+                                        .padding()
+                                        .padding(.bottom, 45)
+                                    }
+                                    .simultaneousGesture(
+                                        DragGesture()
+                                            .onChanged { _ in
+                                                withAnimation(.easeInOut(duration: 0.2)) {
+                                                    showTabBar = false
+                                                }
+                                            }
+                                            .onEnded { _ in
+                                                withAnimation(.easeInOut(duration: 0.2)) {
+                                                    showTabBar = true
+                                                }
+                                            }
+                                    )
                                 }
-                                .simultaneousGesture(
-                                    DragGesture()
-                                        .onChanged { _ in
-                                            withAnimation(.easeInOut(duration: 0.2)) {
-                                                showTabBar = false
-                                            }
-                                        }
-                                        .onEnded { _ in
-                                            withAnimation(.easeInOut(duration: 0.2)) {
-                                                showTabBar = true
-                                            }
-                                        }
-                                )
-                                .navigationBarTitleDisplayMode(.inline)
                             }
                         }
+                        .navigationBarTitleDisplayMode(.inline)
                         .tag(0)
                         
                         Text("Saved")
@@ -99,7 +137,9 @@ struct ListView: View {
             }
         }
         .onAppear {
-            viewModel.loadSurfSpots()
+            Task {
+                await viewModel.loadSurfSpots()
+            }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 withAnimation {

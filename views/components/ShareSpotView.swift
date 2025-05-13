@@ -199,45 +199,59 @@ struct ShareSpotView: View {
         }
     }
     
+    private func submitSpot() {
+        isSubmitting = true
+        
+        Task {
+            do {
+                try await viewModel.submitSpot(
+                    name: spotName,
+                    location: location,
+                    coordinates: coordinates,
+                    difficulty: difficulty,
+                    peakSeasonStart: peakSeasonStart,
+                    peakSeasonEnd: peakSeasonEnd,
+                    websiteLink: websiteLink,
+                    type: selectedType,
+                    imageURL: imageURL
+                )
+                
+                DispatchQueue.main.async {
+                    alertMessage = "Spot shared successfully!"
+                    showAlert = true
+                    resetForm()
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    alertMessage = "Error sharing spot: \(error.localizedDescription)"
+                    showAlert = true
+                }
+            }
+            
+            DispatchQueue.main.async {
+                isSubmitting = false
+            }
+        }
+    }
+    
+    private func resetForm() {
+        spotName = ""
+        location = ""
+        coordinates = ""
+        difficulty = 3
+        peakSeasonStart = Date()
+        peakSeasonEnd = Date()
+        websiteLink = ""
+        selectedType = "Reef Break"
+        imageURL = ""
+    }
+    
     private var isFormValid: Bool {
         !spotName.isEmpty &&
         !location.isEmpty &&
         !coordinates.isEmpty &&
-        !websiteLink.isEmpty &&
-        !imageURL.isEmpty
-    }
-    
-    private func submitSpot() {
-        isSubmitting = true
-        
-        viewModel.submitSpot(
-            name: spotName,
-            location: location,
-            coordinates: coordinates,
-            difficulty: difficulty,
-            peakSeasonStart: peakSeasonStart,
-            peakSeasonEnd: peakSeasonEnd,
-            websiteLink: websiteLink,
-            type: selectedType,
-            imageURL: imageURL
-        ) { success in
-            isSubmitting = false
-            if success {
-                alertMessage = "Your spot has been shared"
-                spotName = ""
-                location = ""
-                coordinates = ""
-                difficulty = 3
-                peakSeasonStart = Date()
-                peakSeasonEnd = Date()
-                websiteLink = ""
-                selectedType = "Reef Break"
-                imageURL = ""
-            } else {
-                alertMessage = "Error sharing spot. Please try again."
-            }
-            showAlert = true
-        }
+        !imageURL.isEmpty &&
+        peakSeasonEnd > peakSeasonStart
     }
 }
 

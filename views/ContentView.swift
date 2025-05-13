@@ -24,32 +24,32 @@ struct ContentView: View {
                         .frame(height: 210)
                     
                     VStack {
-                        CircleImage(url: URL(string: spot.imageName))
+                        CircleImage(url: URL(string: spot.photoURL))
                             .offset(y: -100)
                             .padding(.bottom, -100)
                             .zIndex(2)
                         
                         VStack(alignment: .leading) {
                             HStack(alignment: .firstTextBaseline) {
-                                Text(spot.title)
+                                Text(spot.destination)
                                     .font(.largeTitle)
                                     .bold()
                                     .foregroundColor(.blue)
                                 
                                 Spacer()
                                 
-                                Text(spot.location)
+                                Text(spot.destinationState)
                                     .font(.headline)
                             }
                             
-                            Text(spot.condition)
+                            Text(spot.surfBreak.joined(separator: ", "))
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                                 .padding(.bottom, 12)
 
                             Divider()
 
-                            Text("About \(spot.title)")
+                            Text("About \(spot.destination)")
                                 .font(.title2)
                                 .padding(.top, 12)
                                 .padding(.bottom, 4)
@@ -61,7 +61,7 @@ struct ContentView: View {
                                 
                                 Spacer()
                                 HStack(spacing: 2) {
-                                    ForEach(0..<spot.rating, id: \.self) { _ in
+                                    ForEach(0..<spot.difficultyLevel, id: \.self) { _ in
                                         Image(systemName: "star.fill")
                                             .foregroundColor(.red.opacity(0.8))
                                             .font(.system(size: 15))
@@ -75,21 +75,31 @@ struct ContentView: View {
                                 Label("Peak surf season", systemImage: "figure.surfing")
                                     .font(.body)
                                 Spacer()
-                                Text(spot.dateRange)
+                                Text("\(spot.formattedPeakSeasonBegins) - \(spot.formattedPeakSeasonEnds)")
                                     .font(.body)
                             }
                             .padding(.vertical, 0.5)
 
                             HStack {
-                                Link(destination: URL(string: spot.forecastURL)!) {
-                                    Label("See surf forecast", systemImage: "arrow.up.right.circle")
-                                        .foregroundColor(.blue)
-                                        .font(.body)
-                                        .padding(.vertical, 20)
-                                }
+                                Label("Address", systemImage: "location.fill")
+                                    .font(.body)
+                                Spacer()
+                                Text(spot.address)
+                                    .font(.body)
                             }
-                            .font(.caption)
                             .padding(.vertical, 0.5)
+                            
+                            if let forecastURL = spot.forecastURL, let url = URL(string: forecastURL) {
+                                HStack {
+                                    Link(destination: url) {
+                                        Label("See surf forecast", systemImage: "arrow.up.right.circle")
+                                            .foregroundColor(.blue)
+                                            .font(.body)
+                                            .padding(.vertical, 10)
+                                    }
+                                }
+                                .padding(.vertical, 0.5)
+                            }
                         }
                         .padding()
                     }
@@ -101,5 +111,16 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView(spot: SurfSpot.example)
+    ContentView(spot: SurfSpot(
+        id: "1",
+        photoURL: "https://example.com/image.jpg",
+        destination: "The Bubble",
+        destinationState: "Fuerteventura, Canary Islands",
+        peakSeasonBegins: "2024-07-22",
+        peakSeasonEnds: "2024-08-31",
+        surfBreak: ["Reef", "Point Break"],
+        difficultyLevel: 4,
+        address: "Calle del Mar, 123",
+        forecastURL: "https://www.surfline.com/surf-report/pipeline/..."
+    ))
 }

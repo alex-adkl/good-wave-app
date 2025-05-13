@@ -12,7 +12,7 @@ struct SpotCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             ZStack(alignment: .topLeading) {
-                AsyncImageView(url: URL(string: spot.imageName), placeholder: "figure.surfing")
+                AsyncImageView(url: URL(string: spot.photoURL), placeholder: "figure.surfing")
                     .frame(height: 200)
                     .frame(width: 370)
                     .cornerRadius(16)
@@ -39,20 +39,20 @@ struct SpotCardView: View {
             }
             
             HStack(alignment: .firstTextBaseline) {
-                Text("\(spot.title) • \(spot.location)")
+                Text("\(spot.destination) • \(spot.destinationState)")
                     .font(.headline)
                     .foregroundColor(.black)
                 Spacer()
-                Text("★ \(spot.rating)")
+                Text("★ \(spot.difficultyLevel)")
                     .foregroundColor(.red.opacity(0.7))
             }
             
             HStack {
-                Text(spot.dateRange)
+                Text("\(spot.formattedPeakSeasonBegins) - \(spot.formattedPeakSeasonEnds)")
                     .font(.subheadline)
                     .foregroundColor(.gray)
                 Spacer()
-                Text(spot.condition.uppercased())
+                Text(spot.surfBreak.joined(separator: ", ").uppercased())
                     .bold()
                     .foregroundColor(.black)
             }
@@ -64,14 +64,14 @@ struct SpotCardView: View {
 #Preview {
     SpotCardView(spot: SurfSpot(
         id: "1",
-        fields: SurfSpot.SurfSpotFields(
-            imageURL: "https://example.com/image.jpg",
-            title: "The Bubble",
-            location: "Fuerteventura, Canary Islands",
-            dateRange: "22 July - 31 August",
-            rating: 4,
-            condition: "POOR",
-            forecastURL: "https://www.surfline.com/surf-report/pipeline/..."
-        )
+        photoURL: "https://example.com/image.jpg",
+        destination: "The Bubble",
+        destinationState: "Fuerteventura, Canary Islands",
+        peakSeasonBegins: "2024-07-22",
+        peakSeasonEnds: "2024-08-31",
+        surfBreak: ["Reef", "Point Break"],
+        difficultyLevel: 4,
+        address: "Calle del Mar, 123",
+        forecastURL: "https://www.surfline.com/surf-report/pipeline/..."
     ))
 }

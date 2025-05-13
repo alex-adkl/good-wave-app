@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1",
+    "photo_url": "https://images.unsplash.com/photo-1455264745730-cb3b76250ae8",
+    "destination": "Pipeline",
+    "destination_state": "Oahu, Hawaii",
+    "peak_season_begins": "2024-07-22",
+    "peak_season_ends": "2024-08-31",
+    "surf_break": ["Reef Break"],
+    "difficulty_level": 5,
+    "address": "Banzai Pipeline, Ehukai Beach Park, Haleiwa, HI 96712",
+    "forecast_url": "https://www.surfline.com/surf-report/pipeline/584204214e65fad6a7709b6d"
+  },
+  {
+    "id": "2",
+    "photo_url": "https://images.unsplash.com/photo-1502680390469-be75c86b636f",
+    "destination": "Teahupo'o",
+    "destination_state": "Tahiti, French Polynesia",
+    "peak_season_begins": "2024-05-01",
+    "peak_season_ends": "2024-09-30",
+    "surf_break": ["Reef Break"],
+    "difficulty_level": 5,
+    "address": "Teahupo'o, Tahiti, French Polynesia",
+    "forecast_url": "https://www.surfline.com/surf-report/teahupoo/584204204e65fad6a7708957"
+  },
+  {
+    "id": "3",
+    "photo_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+    "destination": "Supertubes",
+    "destination_state": "Jeffreys Bay, South Africa",
+    "peak_season_begins": "2024-06-01",
+    "peak_season_ends": "2024-08-31",
+    "surf_break": ["Point Break"],
+    "difficulty_level": 4,
+    "address": "Jeffreys Bay, South Africa",
+    "forecast_url": "https://www.surfline.com/surf-report/jeffreys-bay/584204214e65fad6a7709c29"
+  }
+] 
