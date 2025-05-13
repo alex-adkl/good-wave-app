@@ -11,30 +11,31 @@ struct SurfSpotsData: Codable {
     let records: [SurfSpotRecord]
 }
 
-struct SurfSpotRecord: Codable {
+struct SurfSpotRecord: Identifiable, Codable {
     let id: String
     let fields: SurfSpotFields
     let createdTime: String
 }
 
 struct SurfSpotFields: Codable {
+    let photoURL: String
+    let destination: String
+    let destinationState: String
+    let peakSeasonBegins: String
+    let peakSeasonEnds: String
     let surfBreak: [String]
     let difficultyLevel: Int
-    let destination: String
-    let geocode: String
-    let influencers: [String]?
-    let travellers: [String]?
-    let photos: [Photo]
-    let peakSurfSeasonBegins: String
-    let forecastURL: String?
-    let magicSeaweedLink: String
+    let peakSurfSeasonEnds: String
+    let destinationStateCountry: String
+    let address: String
 
-    var formattedPeakSurfSeasonBegins: String {
-        return formatDate(peakSurfSeasonBegins)
+    // Propriétés calculées (pas codées)
+    var formattedPeakSeasonBegins: String {
+        return formatDate(peakSeasonBegins)
     }
 
-    var formattedPeakSurfSeasonEnds: String {
-        return formatDate(peakSurfSeasonEnds)
+    var formattedPeakSeasonEnds: String {
+        return formatDate(peakSeasonEnds)
     }
 
     private func formatDate(_ dateString: String) -> String {
@@ -52,24 +53,17 @@ struct SurfSpotFields: Codable {
         return dateString
     }
 
-    let peakSurfSeasonEnds: String
-    let destinationStateCountry: String
-    let address: String
-
     enum CodingKeys: String, CodingKey {
-        case surfBreak = "Surf Break"
-        case difficultyLevel = "Difficulty Level"
-        case destination = "Destination"
-        case geocode = "Geocode"
-        case influencers = "Influencers"
-        case travellers = "Travellers"
-        case magicSeaweedLink = "Magic Seaweed Link"
-        case photos = "Photos"
-        case peakSurfSeasonBegins = "Peak Surf Season Begins"
-        case peakSurfSeasonEnds = "Peak Surf Season Ends"
-        case destinationStateCountry = "Destination State/Country"
-        case address = "Address"
-        case forecastURL = "Forecast URL"
+        case photoURL = "photo_url"
+        case destination
+        case destinationState = "destination_state"
+        case peakSeasonBegins = "peak_season_begins"
+        case peakSeasonEnds = "peak_season_ends"
+        case surfBreak = "surf_break"
+        case difficultyLevel = "difficulty_level"
+        case peakSurfSeasonEnds = "peak_surf_season_ends"
+        case destinationStateCountry = "destination_state_country"
+        case address
     }
 }
 
