@@ -213,7 +213,8 @@ struct ShareSpotView: View {
                     peakSeasonEnd: peakSeasonEnd,
                     websiteLink: websiteLink,
                     type: selectedType,
-                    imageURL: imageURL
+                    imageURL: imageURL,
+                    forecastURL: websiteLink
                 )
                 
                 DispatchQueue.main.async {

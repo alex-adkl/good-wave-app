@@ -80,16 +80,10 @@ struct ContentView: View {
                             }
                             .padding(.vertical, 0.5)
 
-                            HStack {
-                                Label("Address", systemImage: "location.fill")
-                                    .font(.body)
-                                Spacer()
-                                Text(spot.address)
-                                    .font(.body)
-                            }
+                            
                             .padding(.vertical, 0.5)
                             
-                            if let forecastURL = spot.forecastURL, let url = URL(string: forecastURL) {
+                            if let url = URL(string: spot.forecastURL ?? "") {
                                 HStack {
                                     Link(destination: url) {
                                         Label("See surf forecast", systemImage: "arrow.up.right.circle")
@@ -120,7 +114,7 @@ struct ContentView: View {
         peakSeasonEnds: "2024-08-31",
         surfBreak: ["Reef", "Point Break"],
         difficultyLevel: 4,
-        address: "Calle del Mar, 123",
+        address: "", // address supprimé ou vidé
         forecastURL: "https://www.surfline.com/surf-report/pipeline/..."
     ))
 }
