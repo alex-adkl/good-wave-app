@@ -12,8 +12,8 @@ extension SurfSpot {
             peakSeasonEnds: record.fields.peakSeasonEnds,
             surfBreak: record.fields.surfBreak,
             difficultyLevel: record.fields.difficultyLevel,
-            address: record.fields.address,
-            forecastURL: nil
+            address: "",
+            forecastURL: record.fields.forecastURL
         )
     }
     
@@ -30,7 +30,7 @@ extension SurfSpot {
             surfBreak: ["Unknown"],
             difficultyLevel: 3,
             address: "Unknown Address",
-            forecastURL: nil
+            forecastURL: "https://example.com/default.jpg"
         )
         
         return defaultSpot

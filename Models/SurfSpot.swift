@@ -52,7 +52,7 @@ struct SurfSpot: Identifiable, Codable {
         case surfBreak = "surf_break"
         case difficultyLevel = "difficulty_level"
         case address
-        case forecastURL = "forecast_url"
+        case forecastURL = "Magic Seaweed Link"
     }
     
     // Initialisation pour compatibilité avec les appels existants
@@ -75,7 +75,7 @@ struct SurfSpot: Identifiable, Codable {
     // Initialisation standard avec paramètres nommés
     init(id: String, photoURL: String, destination: String, destinationState: String,
          peakSeasonBegins: String, peakSeasonEnds: String, surfBreak: [String],
-         difficultyLevel: Int, address: String, forecastURL: String? = nil) {
+         difficultyLevel: Int, address: String, forecastURL: String?) {
         
         self.id = id
         self.photoURL = photoURL

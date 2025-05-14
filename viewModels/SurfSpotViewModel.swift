@@ -36,7 +36,7 @@ class SurfSpotViewModel: ObservableObject {
         isLoading = false
     }
     
-    func submitSpot(name: String, location: String, coordinates: String, difficulty: Int, peakSeasonStart: Date, peakSeasonEnd: Date, websiteLink: String, type: String, imageURL: String) async throws {
+    func submitSpot(name: String, location: String, coordinates: String, difficulty: Int, peakSeasonStart: Date, peakSeasonEnd: Date, websiteLink: String, type: String, imageURL: String, forecastURL: String) async throws {
         try await service.submitSpot(
             name: name,
             location: location,
@@ -46,7 +46,8 @@ class SurfSpotViewModel: ObservableObject {
             peakSeasonEnd: peakSeasonEnd,
             websiteLink: websiteLink,
             type: type,
-            imageURL: imageURL
+            imageURL: imageURL,
+            //forecastURL: forecastURL
         )
         await loadSurfSpots() // Recharger la liste après l'ajout
     }

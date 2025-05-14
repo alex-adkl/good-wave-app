@@ -27,7 +27,7 @@ struct SurfSpotFields: Codable {
     let difficultyLevel: Int
     let peakSurfSeasonEnds: String
     let destinationStateCountry: String
-    let address: String
+    let forecastURL: String
 
     // Propriétés calculées (pas codées)
     var formattedPeakSeasonBegins: String {
@@ -63,7 +63,7 @@ struct SurfSpotFields: Codable {
         case difficultyLevel = "difficulty_level"
         case peakSurfSeasonEnds = "peak_surf_season_ends"
         case destinationStateCountry = "destination_state_country"
-        case address
+        case forecastURL = "Magic Seaweed Link"
     }
 }
 
