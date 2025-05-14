@@ -161,7 +161,7 @@ class SurfSpotService {
     }
     
     func submitSpot(name: String, location: String, coordinates: String, difficulty: Int, peakSeasonStart: Date, peakSeasonEnd: Date, websiteLink: String, type: String, imageURL: String) async throws {
-        guard let url = URL(string: "\(baseURL)/surf-spots") else {
+        guard let url = URL(string: "\(baseURL)/api/surf-spots") else {
             throw SurfSpotServiceError.invalidURL
         }
         

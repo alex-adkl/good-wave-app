@@ -202,37 +202,79 @@ struct ShareSpotView: View {
     private func submitSpot() {
         isSubmitting = true
         
-        Task {
-            do {
-                try await viewModel.submitSpot(
-                    name: spotName,
-                    location: location,
-                    coordinates: coordinates,
-                    difficulty: difficulty,
-                    peakSeasonStart: peakSeasonStart,
-                    peakSeasonEnd: peakSeasonEnd,
-                    websiteLink: websiteLink,
-                    type: selectedType,
-                    imageURL: imageURL,
-                    forecastURL: websiteLink
-                )
-                
-                DispatchQueue.main.async {
-                    alertMessage = "Spot shared successfully!"
-                    showAlert = true
-                    resetForm()
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    alertMessage = "Error sharing spot: \(error.localizedDescription)"
-                    showAlert = true
-                }
-            }
-            
-            DispatchQueue.main.async {
-                isSubmitting = false
-            }
+        // Format dates to match API format
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let startDate = dateFormatter.string(from: peakSeasonStart)
+        let endDate = dateFormatter.string(from: peakSeasonEnd)
+        
+        // Create request body
+        let requestBody: [String: Any] = [
+            "fields": [
+                "Surf Break": [selectedType],
+                "Difficulty Level": difficulty,
+                "Destination": spotName,
+                "Geocode": coordinates,
+                "Magic Seaweed Link": websiteLink,
+                "Photos": [
+                    ["url": imageURL]
+                ],
+                "Peak Surf Season Begins": startDate,
+                "Destination State/Country": location,
+                "Peak Surf Season Ends": endDate
+            ]
+        ]
+        
+        // Convert to JSON
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody) else {
+            alertMessage = "Error creating request data"
+            showAlert = true
+            isSubmitting = false
+            return
         }
+        
+        // Create URL request
+        guard let url = URL(string: "http://localhost:8080/api/surf-spots") else {
+            alertMessage = "Invalid URL"
+            showAlert = true
+            isSubmitting = false
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData
+        
+        // Send request
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.alertMessage = "Error: \(error.localizedDescription)"
+                    self.showAlert = true
+                    self.isSubmitting = false
+                    return
+                }
+                
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    self.alertMessage = "Invalid response"
+                    self.showAlert = true
+                    self.isSubmitting = false
+                    return
+                }
+                
+                if httpResponse.statusCode == 201 {
+                    self.alertMessage = "Spot shared successfully!"
+                    self.showAlert = true
+                    self.resetForm()
+                } else {
+                    self.alertMessage = "Error: Server returned status code \(httpResponse.statusCode)"
+                    self.showAlert = true
+                }
+                
+                self.isSubmitting = false
+            }
+        }.resume()
     }
     
     private func resetForm() {
