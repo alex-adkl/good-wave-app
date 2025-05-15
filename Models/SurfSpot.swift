@@ -11,13 +11,14 @@ struct SurfSpot: Identifiable, Codable {
     let id: String
     let photoURL: String
     let destination: String
-    let destinationState: String
+    let country: String
     let peakSeasonBegins: String
     let peakSeasonEnds: String
     let surfBreak: [String]
     let difficultyLevel: Int
     let address: String
     let forecastURL: String?
+    let geocode: String?
     
     var formattedPeakSeasonBegins: String {
         return formatDate(peakSeasonBegins)
@@ -44,49 +45,16 @@ struct SurfSpot: Identifiable, Codable {
     
     enum CodingKeys: String, CodingKey {
         case id
-        case photoURL = "photo_url"
+        case photoURL = "photo"
         case destination
-        case destinationState = "destination_state"
+        case country
         case peakSeasonBegins = "peak_season_begins"
         case peakSeasonEnds = "peak_season_ends"
         case surfBreak = "surf_break"
         case difficultyLevel = "difficulty_level"
         case address
-        case forecastURL = "Magic Seaweed Link"
-    }
-    
-    // Initialisation pour compatibilité avec les appels existants
-    init(_ id: String, _ photoURL: String, _ destination: String, _ destinationState: String, 
-         _ peakSeasonBegins: String, _ peakSeasonEnds: String, _ surfBreak: [String],
-         _ difficultyLevel: Int, _ address: String, _ forecastURL: String?) {
-        
-        self.id = id
-        self.photoURL = photoURL
-        self.destination = destination
-        self.destinationState = destinationState
-        self.peakSeasonBegins = peakSeasonBegins
-        self.peakSeasonEnds = peakSeasonEnds
-        self.surfBreak = surfBreak
-        self.difficultyLevel = difficultyLevel
-        self.address = address
-        self.forecastURL = forecastURL
-    }
-    
-    // Initialisation standard avec paramètres nommés
-    init(id: String, photoURL: String, destination: String, destinationState: String,
-         peakSeasonBegins: String, peakSeasonEnds: String, surfBreak: [String],
-         difficultyLevel: Int, address: String, forecastURL: String?) {
-        
-        self.id = id
-        self.photoURL = photoURL
-        self.destination = destination
-        self.destinationState = destinationState
-        self.peakSeasonBegins = peakSeasonBegins
-        self.peakSeasonEnds = peakSeasonEnds
-        self.surfBreak = surfBreak
-        self.difficultyLevel = difficultyLevel
-        self.address = address
-        self.forecastURL = forecastURL
+        case forecastURL = "link"
+        case geocode
     }
     
     init(from decoder: Decoder) throws {
@@ -109,7 +77,7 @@ struct SurfSpot: Identifiable, Codable {
         // Décodage obligatoire avec valeurs par défaut si nécessaire
         photoURL = try container.decodeIfPresent(String.self, forKey: .photoURL) ?? ""
         destination = try container.decodeIfPresent(String.self, forKey: .destination) ?? "Sans titre"
-        destinationState = try container.decodeIfPresent(String.self, forKey: .destinationState) ?? "Emplacement inconnu"
+        country = try container.decodeIfPresent(String.self, forKey: .country) ?? "Emplacement inconnu"
         peakSeasonBegins = try container.decodeIfPresent(String.self, forKey: .peakSeasonBegins) ?? "2025-01-01"
         peakSeasonEnds = try container.decodeIfPresent(String.self, forKey: .peakSeasonEnds) ?? "2025-12-31"
         
@@ -140,5 +108,9 @@ struct SurfSpot: Identifiable, Codable {
         
         address = try container.decodeIfPresent(String.self, forKey: .address) ?? "Adresse non spécifiée"
         forecastURL = try container.decodeIfPresent(String.self, forKey: .forecastURL)
+        geocode = try container.decodeIfPresent(String.self, forKey: .geocode)
     }
+    
+    var title: String { destination }
+    var location: String { country }
 }
