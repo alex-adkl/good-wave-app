@@ -105,11 +105,11 @@ struct ListView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .tag(0)
-            SavedView(showTabBar: $showTabBar)
+            good_wave.SavedView(showTabBar: $showTabBar)
               .tag(1)
             Text("Profile")
               .tag(2)
-            ShareSpotView(showTabBar: $showTabBar)
+            good_wave.ShareSpotView(showTabBar: $showTabBar)
               .tag(3)
           }
           .tabViewStyle(.page(indexDisplayMode: .never))
