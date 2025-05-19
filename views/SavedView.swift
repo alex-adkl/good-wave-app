@@ -12,6 +12,7 @@ struct SavedView: View {
     @Binding var showTabBar: Bool
 
     var body: some View {
+        let savedSpots = viewModel.surfSpots.filter { $0.saved }
         ZStack(alignment: .bottom) {
             NavigationView {
                 ScrollView {
@@ -24,10 +25,19 @@ struct SavedView: View {
                             Spacer()
                         }
                         .padding(.top)
-                        ForEach(viewModel.surfSpots) { spot in
-                            NavigationLink(destination: ContentView(spot: spot)) {
-                                SpotCardView(spot: spot)
+                        if savedSpots.isEmpty {
+                            Text("No saved spots yet.")
+                                .font(.headline)
+                                .foregroundColor(.gray)
+                                .padding(.top, 40)
+                        } else {
+                            ForEach(savedSpots) { spot in
+                                NavigationLink(destination: ContentView(spot: spot)) {
+                                    SpotCardView(spot: spot) {
+                                        viewModel.toggleSaved(for: spot)
+                                    }
                                     .frame(maxWidth: .infinity)
+                                }
                             }
                         }
                     }

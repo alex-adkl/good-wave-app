@@ -79,8 +79,10 @@ struct ListView: View {
                     VStack(spacing: 16) {
                       ForEach(filteredSpots) { spot in
                         NavigationLink(destination: ContentView(spot: spot)) {
-                          SpotCardView(spot: spot)
-                            .frame(maxWidth: .infinity)
+                          SpotCardView(spot: spot) {
+                            viewModel.toggleSaved(for: spot)
+                          }
+                          .frame(maxWidth: .infinity)
                         }
                       }
                     }

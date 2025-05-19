@@ -15,9 +15,11 @@ class SurfSpotViewModel: ObservableObject {
     @Published var error: String?
     
     private let service: SurfSpotService
+    private let saveService: SurfSpotSaveService
     
-    init(service: SurfSpotService = SurfSpotService()) {
+    init(service: SurfSpotService = SurfSpotService(), saveService: SurfSpotSaveService = SurfSpotSaveService()) {
         self.service = service
+        self.saveService = saveService
         Task {
             await loadSurfSpots()
         }
@@ -50,5 +52,32 @@ class SurfSpotViewModel: ObservableObject {
             //forecastURL: forecastURL
         )
         await loadSurfSpots() // Recharger la liste après l'ajout
+    }
+    
+    func toggleSaved(for spot: SurfSpot) {
+        Task {
+            do {
+                let updatedSaved = !spot.saved
+                try await saveService.updateSavedStatus(for: spot.id, saved: updatedSaved)
+                if let index = surfSpots.firstIndex(where: { $0.id == spot.id }) {
+                    surfSpots[index] = SurfSpot(
+                        id: spot.id,
+                        photoURL: spot.photoURL,
+                        destination: spot.destination,
+                        country: spot.country,
+                        peakSeasonBegins: spot.peakSeasonBegins,
+                        peakSeasonEnds: spot.peakSeasonEnds,
+                        surfBreak: spot.surfBreak,
+                        difficultyLevel: spot.difficultyLevel,
+                        address: spot.address,
+                        forecastURL: spot.forecastURL,
+                        geocode: spot.geocode,
+                        saved: updatedSaved
+                    )
+                }
+            } catch {
+                print("Erreur lors du toggle saved : \(error)")
+            }
+        }
     }
 }

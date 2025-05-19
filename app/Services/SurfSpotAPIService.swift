@@ -1,5 +1,5 @@
 //
-//  SurfSpotService.swift
+//  SurfSpotAPIService.swift
 //  good-wave
 //
 //  Created by Alejandra ADEIKALAM on 13/05/2025.

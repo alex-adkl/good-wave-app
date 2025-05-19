@@ -4,10 +4,12 @@
 //
 //  Created by Théo  on 29/04/2025.
 //
+
 import SwiftUI
 
 struct SpotCardView: View {
     let spot: SurfSpot
+    let onToggleSaved: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -29,15 +31,19 @@ struct SpotCardView: View {
 
                 HStack {
                     Spacer()
-                    Image(systemName: "heart")
-                        .foregroundColor(.black)
-                        .padding(8)
-                        .background(Color.white)
-                        .clipShape(Circle())
-                        .padding(10)
+                    Button(action: {
+                        onToggleSaved()
+                    }) {
+                        Image(systemName: spot.saved ? "heart.fill" : "heart")
+                            .foregroundColor(.pink)
+                            .padding(8)
+                            .background(Color.white)
+                            .clipShape(Circle())
+                    }
+                    .padding(10)
                 }
             }
-            
+
             HStack(alignment: .firstTextBaseline) {
                 Text("\(spot.destination) • \(spot.location)")
                     .font(.headline)
@@ -46,7 +52,7 @@ struct SpotCardView: View {
                 Text("★ \(spot.difficultyLevel)")
                     .foregroundColor(.red.opacity(0.7))
             }
-            
+
             HStack {
                 Text("\(spot.formattedPeakSeasonBegins) - \(spot.formattedPeakSeasonEnds)")
                     .font(.subheadline)
@@ -77,5 +83,5 @@ struct SpotCardView: View {
     }
     """.data(using: .utf8)!
     let spot = try! JSONDecoder().decode(SurfSpot.self, from: json)
-    return SpotCardView(spot: spot)
+    return SpotCardView(spot: spot, onToggleSaved: {})
 }

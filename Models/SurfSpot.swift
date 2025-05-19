@@ -19,6 +19,7 @@ struct SurfSpot: Identifiable, Codable {
     let address: String
     let forecastURL: String?
     let geocode: String?
+    let saved: Bool
     
     var formattedPeakSeasonBegins: String {
         return formatDate(peakSeasonBegins)
@@ -55,6 +56,7 @@ struct SurfSpot: Identifiable, Codable {
         case address
         case forecastURL = "link"
         case geocode
+        case saved
         
         // Variations du nom du champ de difficulté
         static var difficultyKeys: [String] {
@@ -126,8 +128,37 @@ struct SurfSpot: Identifiable, Codable {
         address = try container.decodeIfPresent(String.self, forKey: .address) ?? "Adresse non spécifiée"
         forecastURL = try container.decodeIfPresent(String.self, forKey: .forecastURL)
         geocode = try container.decodeIfPresent(String.self, forKey: .geocode)
+        saved = try container.decodeIfPresent(Bool.self, forKey: .saved) ?? false
     }
     
     var title: String { destination }
     var location: String { country }
+    
+    init(
+        id: String,
+        photoURL: String,
+        destination: String,
+        country: String,
+        peakSeasonBegins: String,
+        peakSeasonEnds: String,
+        surfBreak: [String],
+        difficultyLevel: Int,
+        address: String,
+        forecastURL: String?,
+        geocode: String?,
+        saved: Bool
+    ) {
+        self.id = id
+        self.photoURL = photoURL
+        self.destination = destination
+        self.country = country
+        self.peakSeasonBegins = peakSeasonBegins
+        self.peakSeasonEnds = peakSeasonEnds
+        self.surfBreak = surfBreak
+        self.difficultyLevel = difficultyLevel
+        self.address = address
+        self.forecastURL = forecastURL
+        self.geocode = geocode
+        self.saved = saved
+    }
 }
