@@ -55,6 +55,19 @@ struct SurfSpot: Identifiable, Codable {
         case address
         case forecastURL = "link"
         case geocode
+        
+        // Variations du nom du champ de difficulté
+        static var difficultyKeys: [String] {
+            return ["difficulty_level", "difficulty", "Difficulty Level"]
+        }
+    }
+    
+    // Ajout d'une clé générique pour décoder dynamiquement
+    struct AnyCodingKey: CodingKey {
+        var stringValue: String
+        var intValue: Int? { nil }
+        init(stringValue: String) { self.stringValue = stringValue }
+        init?(intValue: Int) { return nil }
     }
     
     init(from decoder: Decoder) throws {
@@ -93,18 +106,22 @@ struct SurfSpot: Identifiable, Codable {
             }
         }
         
-        // Décodage de l'entier avec fallback
-        do {
-            difficultyLevel = try container.decode(Int.self, forKey: .difficultyLevel)
-        } catch {
-            // Essayer de décoder une chaîne numérique
-            if let levelString = try? container.decode(String.self, forKey: .difficultyLevel),
-               let levelInt = Int(levelString) {
-                difficultyLevel = levelInt
-            } else {
-                difficultyLevel = 1
+        // Container générique pour clés dynamiques
+        let dynamicContainer = try decoder.container(keyedBy: AnyCodingKey.self)
+        // Décodage de la difficulté avec fallback
+        var tempDifficultyLevel = 1
+        for key in CodingKeys.difficultyKeys {
+            let codingKey = AnyCodingKey(stringValue: key)
+            if let value = try? dynamicContainer.decodeIfPresent(Int.self, forKey: codingKey) {
+                tempDifficultyLevel = value
+                break
+            } else if let value = try? dynamicContainer.decodeIfPresent(String.self, forKey: codingKey),
+                      let intValue = Int(value) {
+                tempDifficultyLevel = intValue
+                break
             }
         }
+        difficultyLevel = tempDifficultyLevel
         
         address = try container.decodeIfPresent(String.self, forKey: .address) ?? "Adresse non spécifiée"
         forecastURL = try container.decodeIfPresent(String.self, forKey: .forecastURL)
