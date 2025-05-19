@@ -6,6 +6,7 @@ struct ShareSpotView: View {
     @StateObject private var viewModel = SurfSpotViewModel()
     @State private var spotName = ""
     @State private var location = ""
+    @State private var country = ""
     @State private var coordinates = ""
     @State private var difficulty = 3
     @State private var peakSeasonStart = Date()
@@ -93,7 +94,15 @@ struct ShareSpotView: View {
                         VStack(alignment: .leading) {
                             Text("Location")
                                 .font(.headline)
-                            TextField("City, country", text: $location)
+                            TextField("Address", text: $location)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .padding(.vertical, 8)
+                        }
+                        
+                        VStack(alignment: .leading) {
+                            Text("Country")
+                                .font(.headline)
+                            TextField("Country", text: $country)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .padding(.vertical, 8)
                         }
@@ -202,84 +211,41 @@ struct ShareSpotView: View {
     private func submitSpot() {
         isSubmitting = true
         
-        // Format dates to match API format
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        let startDate = dateFormatter.string(from: peakSeasonStart)
-        let endDate = dateFormatter.string(from: peakSeasonEnd)
-        
-        // Create request body
-        let requestBody: [String: Any] = [
-            "fields": [
-                "Surf Break": [selectedType],
-                "Difficulty Level": difficulty,
-                "Destination": spotName,
-                "Geocode": coordinates,
-                "Magic Seaweed Link": websiteLink,
-                "Photos": [
-                    ["url": imageURL]
-                ],
-                "Peak Surf Season Begins": startDate,
-                "Destination State/Country": location,
-                "Peak Surf Season Ends": endDate
-            ]
-        ]
-        
-        // Convert to JSON
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody) else {
-            alertMessage = "Error creating request data"
-            showAlert = true
-            isSubmitting = false
-            return
-        }
-        
-        // Create URL request
-        guard let url = URL(string: "http://localhost:8080/api/surf-spots") else {
-            alertMessage = "Invalid URL"
-            showAlert = true
-            isSubmitting = false
-            return
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = jsonData
-        
-        // Send request
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                if let error = error {
-                    self.alertMessage = "Error: \(error.localizedDescription)"
-                    self.showAlert = true
-                    self.isSubmitting = false
-                    return
-                }
+        Task {
+            do {
+                let service = SurfSpotService()
+                try await service.submitSpot(
+                    name: spotName,
+                    location: location,
+                    coordinates: coordinates,
+                    difficulty: difficulty,
+                    peakSeasonStart: peakSeasonStart,
+                    peakSeasonEnd: peakSeasonEnd,
+                    websiteLink: websiteLink,
+                    type: selectedType,
+                    imageURL: imageURL
+                )
                 
-                guard let httpResponse = response as? HTTPURLResponse else {
-                    self.alertMessage = "Invalid response"
-                    self.showAlert = true
-                    self.isSubmitting = false
-                    return
+                await MainActor.run {
+                    alertMessage = "Spot partagé avec succès!"
+                    showAlert = true
+                    resetForm()
+                    isSubmitting = false
                 }
-                
-                if httpResponse.statusCode == 201 {
-                    self.alertMessage = "Spot shared successfully!"
-                    self.showAlert = true
-                    self.resetForm()
-                } else {
-                    self.alertMessage = "Error: Server returned status code \(httpResponse.statusCode)"
-                    self.showAlert = true
+            } catch {
+                await MainActor.run {
+                    alertMessage = "Erreur: \(error.localizedDescription)"
+                    showAlert = true
+                    isSubmitting = false
                 }
-                
-                self.isSubmitting = false
             }
-        }.resume()
+        }
     }
     
     private func resetForm() {
         spotName = ""
         location = ""
+        country = ""
         coordinates = ""
         difficulty = 3
         peakSeasonStart = Date()
@@ -292,6 +258,7 @@ struct ShareSpotView: View {
     private var isFormValid: Bool {
         !spotName.isEmpty &&
         !location.isEmpty &&
+        !country.isEmpty &&
         !coordinates.isEmpty &&
         !imageURL.isEmpty &&
         peakSeasonEnd > peakSeasonStart

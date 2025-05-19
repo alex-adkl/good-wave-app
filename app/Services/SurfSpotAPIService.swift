@@ -7,11 +7,6 @@
 
 import Foundation
 
-// Structure d'enveloppe pour gérer différents formats de réponse JSON
-struct SpotWrapper: Codable {
-    let data: [SurfSpot]
-}
-
 enum SurfSpotServiceError: Error, LocalizedError {
     case networkUnavailable
     case invalidURL
@@ -109,39 +104,14 @@ class SurfSpotService {
             
             let decoder = JSONDecoder()
             
-            // Essayons d'abord de décoder directement
+            // Décodage direct uniquement
             do {
                 let spots = try decoder.decode([SurfSpot].self, from: data)
                 CacheManager.shared.cacheSurfSpots(spots)
                 return spots
             } catch {
-                print("Erreur lors du décodage direct: \(error)")
-                
-                // Essayons de décoder avec une structure d'enveloppe
-                do {
-                    let wrapper = try decoder.decode(SpotWrapper.self, from: data)
-                    CacheManager.shared.cacheSurfSpots(wrapper.data)
-                    return wrapper.data
-                } catch {
-                    print("Erreur lors du décodage avec wrapper: \(error)")
-                    
-                    if let decodingError = error as? DecodingError {
-                        switch decodingError {
-                        case .typeMismatch(let type, let context):
-                            print("Type mismatch: \(type) - \(context.debugDescription)")
-                        case .valueNotFound(let type, let context):
-                            print("Value not found: \(type) - \(context.debugDescription)")
-                        case .keyNotFound(let key, let context):
-                            print("Key not found: \(key) - \(context.debugDescription)")
-                        case .dataCorrupted(let context):
-                            print("Data corrupted: \(context.debugDescription)")
-                        @unknown default:
-                            print("Unknown decoding error")
-                        }
-                    }
-                    
-                    throw SurfSpotServiceError.decodingError(error)
-                }
+                print("Erreur lors du décodage: \(error)")
+                throw SurfSpotServiceError.decodingError(error)
             }
         } catch {
             if let urlError = error as? URLError {
@@ -164,35 +134,38 @@ class SurfSpotService {
         guard let url = URL(string: "\(baseURL)/api/surf-spots") else {
             throw SurfSpotServiceError.invalidURL
         }
-        
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        
-        let newSpot = [
+
+        let country = location // Assuming 'country' should be derived or passed differently; here we assign location to country for demonstration
+
+        let newSpot: [String: Any] = [
             "destination": name,
-            "destination_state": location,
-            "address": coordinates,
-            "difficulty_level": difficulty,
-            "peak_season_begins": dateFormatter.string(from: peakSeasonStart),
-            "peak_season_ends": dateFormatter.string(from: peakSeasonEnd),
-            "forecast_url": websiteLink,
+            "address": location,
+            "country": country,
+            "difficulty": difficulty,
+            "season_start": dateFormatter.string(from: peakSeasonStart),
+            "season_end": dateFormatter.string(from: peakSeasonEnd),
+            "link": websiteLink,
             "surf_break": [type],
-            "photo_url": imageURL
-        ] as [String : Any]
-        
+            "photo": imageURL,
+            "geocode": coordinates
+        ]
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
+
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: newSpot)
-            
+
             let (_, response) = try await URLSession.shared.data(for: request)
-            
+
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw SurfSpotServiceError.serverUnreachable
             }
-            
+
             guard (200...299).contains(httpResponse.statusCode) else {
                 throw SurfSpotServiceError.invalidResponse(httpResponse.statusCode)
             }

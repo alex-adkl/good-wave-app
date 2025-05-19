@@ -39,7 +39,7 @@ struct SpotCardView: View {
             }
             
             HStack(alignment: .firstTextBaseline) {
-                Text("\(spot.destination) • \(spot.destinationState)")
+                Text("\(spot.destination) • \(spot.location)")
                     .font(.headline)
                     .foregroundColor(.black)
                 Spacer()
@@ -62,16 +62,20 @@ struct SpotCardView: View {
 }
 
 #Preview {
-    SpotCardView(spot: SurfSpot(
-        id: "1",
-        photoURL: "https://example.com/image.jpg",
-        destination: "The Bubble",
-        destinationState: "Fuerteventura, Canary Islands",
-        peakSeasonBegins: "2024-07-22",
-        peakSeasonEnds: "2024-08-31",
-        surfBreak: ["Reef", "Point Break"],
-        difficultyLevel: 4,
-        address: "Calle del Mar, 123",
-        forecastURL: "https://www.surfline.com/surf-report/pipeline/..."
-    ))
+    let json = """
+    {
+        "id": "1",
+        "photo": "https://example.com/image.jpg",
+        "destination": "The Bubble",
+        "country": "Fuerteventura, Canary Islands",
+        "season_start": "2024-07-22",
+        "season_end": "2024-08-31",
+        "surf_break": ["Reef", "Point Break"],
+        "difficulty": 4,
+        "address": "Calle del Mar, 123",
+        "link": "https://www.surfline.com/surf-report/pipeline/..."
+    }
+    """.data(using: .utf8)!
+    let spot = try! JSONDecoder().decode(SurfSpot.self, from: json)
+    return SpotCardView(spot: spot)
 }
