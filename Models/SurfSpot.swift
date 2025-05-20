@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SurfSpot: Identifiable, Codable {
+struct SurfSpot: Identifiable, Codable, Equatable {
     let id: String
     let photoURL: String
     let destination: String

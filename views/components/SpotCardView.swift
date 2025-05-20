@@ -16,7 +16,7 @@ struct SpotCardView: View {
             ZStack(alignment: .topLeading) {
                 AsyncImageView(url: URL(string: spot.photoURL), placeholder: "figure.surfing")
                     .frame(height: 200)
-                    .frame(width: 370)
+                    .frame(maxWidth: .infinity)
                     .cornerRadius(16)
                     .clipped()
 
@@ -63,7 +63,7 @@ struct SpotCardView: View {
                     .foregroundColor(.black)
             }
         }
-        .padding()
+        .padding([.leading, .trailing, .bottom])
     }
 }
 

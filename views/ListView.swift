@@ -12,19 +12,43 @@ struct ListView: View {
   @State private var showSplash = true
   @State private var selectedSpotType: String?
   @State private var searchText = ""
-  var filteredSpots: [SurfSpot] {
-    var spots = viewModel.surfSpots
-    if let selectedType = selectedSpotType {
-      spots = spots.filter { spot in
-        spot.surfBreak.contains(selectedType)
+
+  @ViewBuilder
+  private func spotRow(spot: SurfSpot) -> some View {
+    NavigationLink(destination: ContentView(spot: spot)) {
+      SpotCardView(spot: spot) {
+        viewModel.toggleSaved(for: spot)
+      }
+      .frame(maxWidth: .infinity)
+    }
+    .frame(maxWidth: .infinity)
+    .onAppear {
+      if spot == viewModel.surfSpots.last {
+        Task { await viewModel.loadNextPage() }
       }
     }
+  }
+
+  var filteredSpots: [SurfSpot] {
+    var spots = viewModel.surfSpots
+
+    // Filtre par type
+    if let selectedType = selectedSpotType {
+      let filteredByType = spots.filter { spot in
+        spot.surfBreak.contains(selectedType)
+      }
+      spots = filteredByType
+    }
+
+    // Filtre par recherche
     if !searchText.isEmpty {
-      spots = spots.filter { spot in
+      let filteredBySearch = spots.filter { spot in
         spot.destination.localizedCaseInsensitiveContains(searchText) ||
         spot.address.localizedCaseInsensitiveContains(searchText)
       }
+      spots = filteredBySearch
     }
+
     return spots
   }
   var body: some View {
@@ -59,7 +83,7 @@ struct ListView: View {
                       .padding(.horizontal)
                     Button(action: {
                       Task {
-                        await viewModel.loadSurfSpots()
+                        await viewModel.loadFirstPage()
                       }
                     }) {
                       Text("Réessayer")
@@ -76,20 +100,22 @@ struct ListView: View {
                   .padding()
                 } else {
                   ScrollView {
-                    VStack(spacing: 16) {
-                      ForEach(filteredSpots) { spot in
-                        NavigationLink(destination: ContentView(spot: spot)) {
-                          SpotCardView(spot: spot) {
-                            viewModel.toggleSaved(for: spot)
-                          }
-                          .frame(maxWidth: .infinity)
-                        }
+                    LazyVStack {
+                      ForEach(viewModel.filteredSpots(selectedType: selectedSpotType, searchText: searchText)) { spot in
+                        spotRow(spot: spot)
+                      }
+                      if viewModel.isLoading {
+                        ProgressView()
                       }
                     }
-                    .padding()
-                    .padding(.bottom, 45)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 0)
+                    .background(Color.clear)
                   }
-                  .simultaneousGesture(
+                  .frame(maxWidth: .infinity)
+                  .background(Color.clear)
+                  .padding(.top, 0)
+                  .gesture(
                     DragGesture()
                       .onChanged { _ in
                         withAnimation(.easeInOut(duration: 0.2)) {
@@ -102,6 +128,10 @@ struct ListView: View {
                         }
                       }
                   )
+                  .refreshable {
+                    await viewModel.loadFirstPage(forceRefresh: true)
+                  }
+                  .padding(.bottom, 45)
                 }
               }
             }
@@ -124,9 +154,7 @@ struct ListView: View {
       }
     }
     .onAppear {
-      Task {
-        await viewModel.loadSurfSpots()
-      }
+      Task { await viewModel.loadFirstPage() }
       DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
         withAnimation {
           showSplash = false
