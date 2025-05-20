@@ -11,8 +11,11 @@ import UIKit
 @MainActor
 class SurfSpotViewModel: ObservableObject {
     @Published var surfSpots: [SurfSpot] = []
-    @Published var isLoading = true
+    @Published var isLoading = false
     @Published var error: String?
+    @Published var currentPage = 1
+    @Published var totalPages = 1
+    let pageSize = 10
     
     private let service: SurfSpotService
     private let saveService: SurfSpotSaveService
@@ -21,21 +24,39 @@ class SurfSpotViewModel: ObservableObject {
         self.service = service
         self.saveService = saveService
         Task {
-            await loadSurfSpots()
+            await loadFirstPage()
         }
     }
     
-    func loadSurfSpots() async {
+    func loadFirstPage(forceRefresh: Bool = false) async {
         isLoading = true
         error = nil
-        
         do {
-            surfSpots = try await service.fetchSurfSpots()
+            let response = try await service.fetchSurfSpots(page: 1, pageSize: pageSize, forceRefresh: forceRefresh)
+            self.surfSpots = response.data
+            self.currentPage = response.page
+            self.totalPages = response.totalPages
+            self.isLoading = false
         } catch {
             self.error = error.localizedDescription
+            self.isLoading = false
         }
-        
-        isLoading = false
+    }
+
+    func loadNextPage() async {
+        guard !isLoading, currentPage < totalPages else { return }
+        isLoading = true
+        do {
+            let nextPage = currentPage + 1
+            let response = try await service.fetchSurfSpots(page: nextPage, pageSize: pageSize)
+            self.surfSpots += response.data
+            self.currentPage = response.page
+            self.totalPages = response.totalPages
+            self.isLoading = false
+        } catch {
+            self.error = error.localizedDescription
+            self.isLoading = false
+        }
     }
     
     func submitSpot(name: String, location: String, coordinates: String, difficulty: Int, peakSeasonStart: Date, peakSeasonEnd: Date, websiteLink: String, type: String, imageURL: String, forecastURL: String) async throws {
@@ -51,7 +72,7 @@ class SurfSpotViewModel: ObservableObject {
             imageURL: imageURL,
             //forecastURL: forecastURL
         )
-        await loadSurfSpots() // Recharger la liste après l'ajout
+        await loadFirstPage() // Recharger la liste après l'ajout
     }
     
     func toggleSaved(for spot: SurfSpot) {
@@ -79,5 +100,19 @@ class SurfSpotViewModel: ObservableObject {
                 print("Erreur lors du toggle saved : \(error)")
             }
         }
+    }
+    
+    func filteredSpots(selectedType: String?, searchText: String) -> [SurfSpot] {
+        var spots = surfSpots
+        if let selectedType = selectedType {
+            spots = spots.filter { $0.surfBreak.contains(selectedType) }
+        }
+        if !searchText.isEmpty {
+            spots = spots.filter {
+                $0.destination.localizedCaseInsensitiveContains(searchText) ||
+                $0.address.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+        return spots
     }
 }

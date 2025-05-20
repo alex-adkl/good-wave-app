@@ -10,7 +10,7 @@ struct SpotTypeSelector: View {
     @Binding var selectedType: String?
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 40) {
                 VStack {
@@ -25,10 +25,11 @@ struct SpotTypeSelector: View {
                             alignment: .bottom
                         )
                 }
-                    .foregroundColor(selectedType == "Reef Break" ? .black : .gray)
-                    .onTapGesture {
-                        selectedType = selectedType == "Reef Break" ? nil : "Reef Break"
-                    }
+                .padding(.leading, 14)
+                .foregroundColor(selectedType == "Reef Break" ? .black : .gray)
+                .onTapGesture {
+                    selectedType = selectedType == "Reef Break" ? nil : "Reef Break"
+                }
 
                 VStack {
                     Image(systemName: "beach.umbrella")
@@ -82,11 +83,8 @@ struct SpotTypeSelector: View {
                     }
                 }
                 .padding(.horizontal)
+            }
         }
-        }
-        .background(Color.white)
-        .cornerRadius(10)
-        .shadow(color: .gray.opacity(0.1), radius: 7, x: 0, y: 10)
     }
 }
 

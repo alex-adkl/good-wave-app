@@ -184,4 +184,34 @@ class SurfSpotService {
             }
         }
     }
+    
+    // Ajout du modèle de réponse paginée
+    struct PaginatedResponse<T: Decodable>: Decodable {
+        let data: [T]
+        let page: Int
+        let pageSize: Int
+        let totalPages: Int
+        let totalItems: Int
+    }
+    
+    // Nouvelle méthode paginée
+    func fetchSurfSpots(page: Int = 1, pageSize: Int = 10, forceRefresh: Bool = false) async throws -> PaginatedResponse<SurfSpot> {
+        var urlString = "\(baseURL)/api/surf-spots?page=\(page)&pageSize=\(pageSize)"
+        if forceRefresh {
+            urlString += "&forceRefresh=true"
+        }
+        guard let url = URL(string: urlString) else {
+            throw SurfSpotServiceError.invalidURL
+        }
+        // N'utilise pas le cache si forceRefresh est true
+        if !forceRefresh, let cachedSpots = CacheManager.shared.getCachedSurfSpots() {
+            // Ancien code de cache désactivé pour la pagination, on ne retourne rien ici
+        }
+        let (data, response) = try await URLSession.shared.data(from: url)
+        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+            throw SurfSpotServiceError.invalidResponse((response as? HTTPURLResponse)?.statusCode ?? 0)
+        }
+        let decoder = JSONDecoder()
+        return try decoder.decode(PaginatedResponse<SurfSpot>.self, from: data)
+    }
 }
