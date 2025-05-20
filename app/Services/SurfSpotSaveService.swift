@@ -16,23 +16,42 @@ class SurfSpotSaveService {
         }
 
         let body: [String: Any] = [
-            "destination": id,
             "saved": saved
         ]
 
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw SurfSpotServiceError.serverUnreachable
-        }
-
-        guard (200...299).contains(httpResponse.statusCode) else {
-            throw SurfSpotServiceError.invalidResponse(httpResponse.statusCode)
+        
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: body)
+            
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw SurfSpotServiceError.serverUnreachable
+            }
+            
+            if !(200...299).contains(httpResponse.statusCode) {
+                // Afficher le message d'erreur du serveur si disponible
+                if let errorMessage = String(data: data, encoding: .utf8) {
+                    print("Erreur serveur: \(errorMessage)")
+                }
+                throw SurfSpotServiceError.invalidResponse(httpResponse.statusCode)
+            }
+        } catch {
+            if let urlError = error as? URLError {
+                switch urlError.code {
+                case .notConnectedToInternet:
+                    throw SurfSpotServiceError.networkUnavailable
+                case .cannotConnectToHost, .cannotFindHost:
+                    throw SurfSpotServiceError.serverUnreachable
+                default:
+                    throw error
+                }
+            } else {
+                throw error
+            }
         }
     }
 }
