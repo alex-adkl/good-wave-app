@@ -31,10 +31,11 @@ enum SurfSpotServiceError: Error, LocalizedError {
 }
 
 class SurfSpotService {
-    // URL locale par défaut
-    private var baseURL = "http://localhost:8080"
+    // URL locale par défaut avec l'IP du réseau local
+    private var baseURL = "http://192.168.75.242:8080"
     private var currentURLIndex = 0
     private let alternativeURLs = [
+        "http://192.168.75.242:8080",  // Mettre l'IP en premier
         "http://localhost:8080",
         // Fichier local pour les tests
         "file:///\(Bundle.main.bundlePath)/data.json",
@@ -42,8 +43,8 @@ class SurfSpotService {
     ]
     
     init() {
-        // Commencer avec l'URL locale
-        baseURL = alternativeURLs[currentURLIndex]
+        // Ne pas écraser l'URL de base dans l'init
+        // baseURL est déjà initialisée avec la bonne IP
     }
     
     private func switchToNextURL() {

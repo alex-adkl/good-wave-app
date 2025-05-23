@@ -45,14 +45,14 @@ struct SurfSpot: Identifiable, Codable, Equatable {
     }
     
     enum CodingKeys: String, CodingKey {
-        case id
+        case id = "_id"
         case photoURL = "photo"
         case destination
         case country
-        case peakSeasonBegins = "peak_season_begins"
-        case peakSeasonEnds = "peak_season_ends"
+        case peakSeasonBegins = "season_start"
+        case peakSeasonEnds = "season_end"
         case surfBreak = "surf_break"
-        case difficultyLevel = "difficulty_level"
+        case difficultyLevel = "difficulty"
         case address
         case forecastURL = "link"
         case geocode
@@ -77,7 +77,15 @@ struct SurfSpot: Identifiable, Codable, Equatable {
         
         // Décodage de l'ID avec fallback
         do {
-            id = try container.decode(String.self, forKey: .id)
+            let rawId = try container.decode(String.self, forKey: .id)
+            // Vérifie si c'est un ObjectID MongoDB (24 caractères hexadécimaux)
+            if rawId.count == 24 && rawId.range(of: "^[0-9a-fA-F]{24}$", options: .regularExpression) != nil {
+                id = rawId
+            } else {
+                // Si ce n'est pas un ObjectID, on garde la valeur mais on log un warning
+                print("[SurfSpot] Attention: id non MongoDB ObjectID: \(rawId)")
+                id = rawId
+            }
         } catch {
             // Si l'ID est un entier, le convertir en chaîne
             if let idInt = try? container.decode(Int.self, forKey: .id) {
@@ -85,7 +93,7 @@ struct SurfSpot: Identifiable, Codable, Equatable {
             } else {
                 // Générer un ID aléatoire si aucun ID n'est trouvé
                 id = UUID().uuidString
-                print("ID généré aléatoirement: \(id)")
+                print("[SurfSpot] ID généré aléatoirement: \(id)")
             }
         }
         

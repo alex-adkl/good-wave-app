@@ -20,14 +20,14 @@ struct SpotCardView: View {
                     .cornerRadius(16)
                     .clipped()
 
-                Text("Peeps favorite")
-                    .font(.caption)
-                    .foregroundColor(.black)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(Color.white)
-                    .clipShape(Capsule())
-                    .padding(10)
+                    Text("Peeps favorite")
+                        .font(.caption)
+                        .foregroundColor(.black)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(Color.white)
+                        .clipShape(Capsule())
+                        .padding(10)
 
                 HStack {
                     Spacer()
