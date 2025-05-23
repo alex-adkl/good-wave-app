@@ -8,7 +8,7 @@
 import Foundation
 
 class SurfSpotSaveService {
-    private let baseURL = "http://localhost:8080"
+    private let baseURL = "http://192.168.75.242:8080"
 
     func updateSavedStatus(for id: String, saved: Bool) async throws {
         guard let url = URL(string: "\(baseURL)/api/surf-spots/\(id)") else {

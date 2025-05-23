@@ -25,7 +25,7 @@ struct SpotTypeSelector: View {
                             alignment: .bottom
                         )
                 }
-                .padding(.leading, 14)
+                .padding(.leading, 10)
                 .foregroundColor(selectedType == "Reef Break" ? .black : .gray)
                 .onTapGesture {
                     selectedType = selectedType == "Reef Break" ? nil : "Reef Break"

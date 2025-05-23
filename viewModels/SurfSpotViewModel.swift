@@ -46,10 +46,15 @@ class SurfSpotViewModel: ObservableObject {
     func loadNextPage() async {
         guard !isLoading, currentPage < totalPages else { return }
         isLoading = true
+        let nextPage = currentPage + 1
         do {
-            let nextPage = currentPage + 1
             let response = try await service.fetchSurfSpots(page: nextPage, pageSize: pageSize)
-            self.surfSpots += response.data
+            // Filtre les doublons éventuels
+            let newSpots = response.data.filter { newSpot in
+                !self.surfSpots.contains(where: { $0.id == newSpot.id })
+            }
+            self.surfSpots += newSpots
+            print("IDs après pagination:", self.surfSpots.map { $0.id })
             self.currentPage = response.page
             self.totalPages = response.totalPages
             self.isLoading = false

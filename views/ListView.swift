@@ -12,6 +12,7 @@ struct ListView: View {
   @State private var showSplash = true
   @State private var selectedSpotType: String?
   @State private var searchText = ""
+  @State private var lastLoadedSpotId: String?
 
   @ViewBuilder
   private func spotRow(spot: SurfSpot) -> some View {
@@ -20,10 +21,16 @@ struct ListView: View {
         viewModel.toggleSaved(for: spot)
       }
       .frame(maxWidth: .infinity)
+      .id(spot.id)
     }
     .frame(maxWidth: .infinity)
     .onAppear {
-      if spot == viewModel.surfSpots.last {
+      let filteredSpots = self.filteredSpots
+      if spot == filteredSpots.last,
+         !viewModel.isLoading,
+         searchText.isEmpty,
+         selectedSpotType == nil {
+        lastLoadedSpotId = spot.id
         Task { await viewModel.loadNextPage() }
       }
     }
@@ -34,19 +41,17 @@ struct ListView: View {
 
     // Filtre par type
     if let selectedType = selectedSpotType {
-      let filteredByType = spots.filter { spot in
+      spots = spots.filter { spot in
         spot.surfBreak.contains(selectedType)
       }
-      spots = filteredByType
     }
 
     // Filtre par recherche
     if !searchText.isEmpty {
-      let filteredBySearch = spots.filter { spot in
+      spots = spots.filter { spot in
         spot.destination.localizedCaseInsensitiveContains(searchText) ||
         spot.address.localizedCaseInsensitiveContains(searchText)
       }
-      spots = filteredBySearch
     }
 
     return spots
@@ -101,12 +106,13 @@ struct ListView: View {
                 } else {
                   ScrollView {
                     LazyVStack {
-                      ForEach(viewModel.filteredSpots(selectedType: selectedSpotType, searchText: searchText)) { spot in
+                      ForEach(filteredSpots) { spot in
                         spotRow(spot: spot)
                       }
                       if viewModel.isLoading {
                         ProgressView()
                       }
+                      Spacer().frame(height: 60)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.top, 0)
