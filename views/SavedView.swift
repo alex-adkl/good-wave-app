@@ -42,7 +42,7 @@ struct SavedView: View {
                         }
                     }
                     .padding()
-                    .padding(.bottom, 45)
+                    .padding(.bottom, 50)
                 }
                 .simultaneousGesture(
                     DragGesture()

@@ -12,113 +12,110 @@ struct ContentView: View {
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
-        ZStack(alignment: .top) {
-            MapView()
-                .frame(height: 300)
-                .ignoresSafeArea(edges: .top)
-                .zIndex(0) //MapView en arriere-plan
-            
-            ScrollView {
-                VStack(spacing: 0) {
-                    Color.clear
-                        .frame(height: 210)
+        ScrollView {
+            VStack(spacing: 0) {
+                // Header with map and image
+                ZStack(alignment: .bottom) {
+                    MapView()
+                        .frame(height: 250)
+                        .ignoresSafeArea(edges: .top)
                     
-                    VStack {
-                        CircleImage(url: URL(string: spot.photoURL))
-                            .offset(y: -100)
-                            .padding(.bottom, -100)
-                            .zIndex(2)
+                    CircleImage(url: URL(string: spot.photoURL))
+                        .frame(width: 120, height: 120)
+                        .offset(y: 60)
+                        .shadow(radius: 7)
+                }
+                
+                // Main content
+                VStack(spacing: 24) {
+                    // Header with name and location
+                    VStack(spacing: 8) {
+                        Text(spot.destination)
+                            .font(.system(size: 32, weight: .bold))
+                            .foregroundColor(.primary)
                         
-                        VStack(alignment: .leading) {
-                            HStack(alignment: .firstTextBaseline) {
-                                Text(spot.destination)
-                                    .font(.largeTitle)
-                                    .bold()
-                                    .foregroundColor(.blue)
-                                
-                                Spacer()
-                                
-                                Text(spot.location)
-                                    .font(.headline)
-                            }
-                            
-                            Text(spot.surfBreak.joined(separator: ", "))
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .padding(.bottom, 12)
-
-                            Divider()
-
-                            Text("About \(spot.destination)")
-                                .font(.title2)
-                                .padding(.top, 12)
-                                .padding(.bottom, 4)
-                                .bold()
-
-                            HStack {
-                                Label("Difficulty level", systemImage: "crown.fill")
-                                    .font(.body)
-                                
-                                Spacer()
-                                HStack(spacing: 2) {
+                        Text(spot.country)
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                        
+                        Text(spot.surfBreak.joined(separator: " • "))
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .padding(.top, 4)
+                    }
+                    .padding(.top, 70)
+                    
+                    // Main information section
+                    VStack(spacing: 20) {
+                        // Difficulty
+                        InfoCard(
+                            title: "Difficulty Level",
+                            icon: "crown.fill",
+                            content: {
+                                HStack(spacing: 4) {
                                     ForEach(0..<spot.difficultyLevel, id: \.self) { _ in
                                         Image(systemName: "star.fill")
-                                            .foregroundColor(.red.opacity(0.8))
-                                            .font(.system(size: 15))
+                                            .foregroundColor(.red.opacity(0.7))
                                     }
                                 }
-                                .font(.caption)
                             }
-                            .padding(.vertical, 0.5)
-
-                            HStack {
-                                Label("Peak surf season", systemImage: "figure.surfing")
-                                    .font(.body)
-                                Spacer()
+                        )
+                        
+                        // Season
+                        InfoCard(
+                            title: "Peak Season",
+                            icon: "figure.surfing",
+                            content: {
                                 Text("\(spot.formattedPeakSeasonBegins) - \(spot.formattedPeakSeasonEnds)")
-                                    .font(.body)
+                                    .foregroundColor(.primary)
                             }
-                            .padding(.vertical, 0.5)
-
-                            
-                            .padding(.vertical, 0.5)
-                            
-                            if let url = URL(string: spot.forecastURL ?? "") {
+                        )
+                        
+                        // Forecast link
+                        if let url = URL(string: spot.forecastURL ?? "") {
+                            Link(destination: url) {
                                 HStack {
-                                    Link(destination: url) {
-                                        Label("See surf forecast", systemImage: "arrow.up.right.circle")
-                                            .foregroundColor(.blue)
-                                            .font(.body)
-                                            .padding(.vertical, 10)
-                                    }
+                                    Image(systemName: "arrow.up.right.circle.fill")
+                                    Text("View Forecast")
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption)
                                 }
-                                .padding(.vertical, 0.5)
+                                .padding()
+                                .background(Color.blue.opacity(0.1))
+                                .foregroundColor(.blue)
+                                .cornerRadius(12)
                             }
                         }
-                        .padding()
                     }
-                    .background(Color.white)
+                    .padding(.horizontal)
                 }
+                .background(Color(.systemBackground))
+                .padding(.bottom, 90)
             }
         }
+        .ignoresSafeArea(edges: .top)
     }
 }
 
-#Preview {
-    let json = """
-    {
-        "id": "1",
-        "photo": "https://example.com/image.jpg",
-        "destination": "The Bubble",
-        "country": "Fuerteventura, Canary Islands",
-        "season_start": "2024-07-22",
-        "season_end": "2024-08-31",
-        "surf_break": ["Reef", "Point Break"],
-        "difficulty": 4,
-        "address": "Calle del Mar, 123",
-        "link": "https://www.surfline.com/surf-report/pipeline/..."
+// Reusable component for info cards
+struct InfoCard<Content: View>: View {
+    let title: String
+    let icon: String
+    let content: () -> Content
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label(title, systemImage: icon)
+                .font(.headline)
+                .foregroundColor(.primary)
+            
+            content()
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.secondarySystemBackground))
+        .cornerRadius(12)
     }
-    """.data(using: .utf8)!
-    let spot = try! JSONDecoder().decode(SurfSpot.self, from: json)
-    return ContentView(spot: spot)
 }
+

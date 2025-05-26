@@ -145,7 +145,7 @@ struct ListView: View {
             .tag(0)
             good_wave.SavedView(showTabBar: $showTabBar)
               .tag(1)
-            Text("Profile")
+            ProfileView(showTabBar: $showTabBar)
               .tag(2)
             good_wave.ShareSpotView(showTabBar: $showTabBar)
               .tag(3)
