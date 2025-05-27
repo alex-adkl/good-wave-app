@@ -31,12 +31,15 @@ struct SavedView: View {
                                 .foregroundColor(.gray)
                                 .padding(.top, 40)
                         } else {
-                            ForEach(savedSpots) { spot in
-                                NavigationLink(destination: ContentView(spot: spot, viewModel: viewModel)) {
-                                    SpotCardView(spot: spot) {
-                                        viewModel.toggleSaved(for: spot)
+                            let columns = [
+                                GridItem(.flexible()),
+                                GridItem(.flexible())
+                            ]
+                            LazyVGrid(columns: columns, spacing: 32) {
+                                ForEach(savedSpots) { spot in
+                                    NavigationLink(destination: ContentView(spot: spot, viewModel: viewModel)) {
+                                        SavedSpotGridItemView(spot: spot)
                                     }
-                                    .frame(maxWidth: .infinity)
                                 }
                             }
                         }
