@@ -32,7 +32,7 @@ struct SavedView: View {
                                 .padding(.top, 40)
                         } else {
                             ForEach(savedSpots) { spot in
-                                NavigationLink(destination: ContentView(spot: spot)) {
+                                NavigationLink(destination: ContentView(spot: spot, viewModel: viewModel)) {
                                     SpotCardView(spot: spot) {
                                         viewModel.toggleSaved(for: spot)
                                     }

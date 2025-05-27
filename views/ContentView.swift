@@ -7,23 +7,34 @@
 
 import SwiftUI
 
+func colorForDifficulty(_ level: Int) -> Color {
+    switch level {
+    case 1...2:
+        return .green
+    case 3:
+        return .orange
+    case 4...5:
+        return .red
+    default:
+        return .gray
+    }
+}
+
 struct ContentView: View {
     let spot: SurfSpot
+    @ObservedObject var viewModel: SurfSpotViewModel
     @Environment(\.presentationMode) var presentationMode
+    @State private var showFullMap = false
 
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                // ZStack pour overlay boutons sur la photo
                 ZStack(alignment: .top) {
-                    // Photo du spot en rectangle
                     if let url = URL(string: spot.photoURL) {
                         AsyncImageView(url: url, placeholder: "photo")
                             .frame(height: 250)
                     }
-                    // Boutons overlay
                     HStack {
-                        // Bouton retour
                         Button(action: {
                             presentationMode.wrappedValue.dismiss()
                         }) {
@@ -35,9 +46,7 @@ struct ContentView: View {
                                 .clipShape(Circle())
                         }
                         Spacer()
-                        // Bouton partage
                         Button(action: {
-                            // Action de partage à compléter
                         }) {
                             Image(systemName: "square.and.arrow.up")
                                 .font(.system(size: 20, weight: .medium))
@@ -46,13 +55,13 @@ struct ContentView: View {
                                 .background(Color.white.opacity(0.6))
                                 .clipShape(Circle())
                         }
-                        // Bouton favori
                         Button(action: {
-                            // Action favori à compléter
+                            viewModel.toggleSaved(for: spot)
                         }) {
-                            Image(systemName: "heart")
+                            let isSaved = viewModel.surfSpots.first(where: { $0.id == spot.id })?.saved ?? false
+                            Image(systemName: isSaved ? "heart.fill" : "heart")
                                 .font(.system(size: 20, weight: .medium))
-                                .foregroundColor(.black)
+                                .foregroundColor(.pink)
                                 .padding()
                                 .background(Color.white.opacity(0.6))
                                 .clipShape(Circle())
@@ -60,21 +69,19 @@ struct ContentView: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 15)
-                    // Barre blanche épaisse, toute largeur, au niveau du cercle avec la carte
                     VStack {
                         RoundedRectangle(cornerRadius: 24, style: .continuous)
                             .fill(Color.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 40)
                             .padding(.horizontal, 0)
-                            .padding(.top, 250 - 12) // 250 = hauteur de la photo, 12 = moitié de la hauteur de la barre
+                            .padding(.top, 240)
                         Spacer()
                     }
                 }
                 .ignoresSafeArea(.all, edges: .top)
-                // Cercle par-dessus : carte
                 ZStack(alignment: .bottom) {
-                    Color.clear.frame(height: 0) // pour garder la structure du ZStack
+                    Color.clear.frame(height: 0)
                     MapView()
                         .frame(width: 120, height: 120)
                         .clipShape(Circle())
@@ -82,8 +89,11 @@ struct ContentView: View {
                             Circle()
                                 .stroke(Color.clear, lineWidth: 1)
                         )
-                        .offset(y: 60)
+                        .offset(y: 30)
                         .shadow(radius: 7)
+                        .onTapGesture {
+                            showFullMap = true
+                        }
                 }
                 VStack(spacing: 24) {
                     VStack(spacing: 8) {
@@ -98,7 +108,7 @@ struct ContentView: View {
                             .foregroundColor(.secondary)
                             .padding(.top, 4)
                     }
-                    .padding(.top, 70)
+                    .padding(.top, 50)
                     VStack(spacing: 20) {
                         InfoCard(
                             title: "Difficulty Level",
@@ -107,7 +117,7 @@ struct ContentView: View {
                                 HStack(spacing: 4) {
                                     ForEach(0..<spot.difficultyLevel, id: \.self) { _ in
                                         Image(systemName: "star.fill")
-                                            .foregroundColor(.red.opacity(0.7))
+                                            .foregroundColor(colorForDifficulty(spot.difficultyLevel))
                                     }
                                 }
                             }
@@ -144,6 +154,21 @@ struct ContentView: View {
         .background(Color.clear)
         .ignoresSafeArea(.all, edges: .top)
         .navigationBarHidden(true)
+        .sheet(isPresented: $showFullMap) {
+            ZStack(alignment: .topTrailing) {
+                MapView()
+                    .edgesIgnoringSafeArea(.all)
+                Button(action: {
+                    showFullMap = false
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 32))
+                        .foregroundColor(.white)
+                        .shadow(radius: 4)
+                        .padding()
+                }
+            }
+        }
     }
 }
 

@@ -16,7 +16,7 @@ struct ListView: View {
 
   @ViewBuilder
   private func spotRow(spot: SurfSpot) -> some View {
-    NavigationLink(destination: ContentView(spot: spot)) {
+    NavigationLink(destination: ContentView(spot: spot, viewModel: viewModel)) {
       SpotCardView(spot: spot) {
         viewModel.toggleSaved(for: spot)
       }
@@ -39,14 +39,12 @@ struct ListView: View {
   var filteredSpots: [SurfSpot] {
     var spots = viewModel.surfSpots
 
-    // Filtre par type
     if let selectedType = selectedSpotType {
       spots = spots.filter { spot in
         spot.surfBreak.contains(selectedType)
       }
     }
 
-    // Filtre par recherche
     if !searchText.isEmpty {
       spots = spots.filter { spot in
         spot.destination.localizedCaseInsensitiveContains(searchText) ||

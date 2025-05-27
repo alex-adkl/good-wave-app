@@ -11,6 +11,19 @@ struct SpotCardView: View {
     let spot: SurfSpot
     let onToggleSaved: () -> Void
 
+    func colorForDifficulty(_ level: Int) -> Color {
+        switch level {
+        case 1...2:
+            return .green
+        case 3:
+            return .orange
+        case 4...5:
+            return .red
+        default:
+            return .gray
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             ZStack(alignment: .topLeading) {
@@ -49,8 +62,13 @@ struct SpotCardView: View {
                     .font(.headline)
                     .foregroundColor(.black)
                 Spacer()
-                Text("★ \(spot.difficultyLevel)")
-                    .foregroundColor(.red.opacity(0.7))
+                HStack(spacing: 2) {
+                    Text("\(spot.difficultyLevel)")
+                        .font(.headline)
+                        .foregroundColor(.black)
+                    Image(systemName: "star.fill")
+                        .foregroundColor(colorForDifficulty(spot.difficultyLevel))
+                }
             }
 
             HStack {

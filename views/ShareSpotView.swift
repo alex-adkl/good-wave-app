@@ -121,7 +121,7 @@ struct ShareSpotView: View {
                             HStack {
                                 ForEach(1...5, id: \.self) { star in
                                     Image(systemName: star <= difficulty ? "star.fill" : "star")
-                                        .foregroundColor(.red.opacity(0.7))
+                                        .foregroundColor(colorForDifficulty(difficulty))
                                         .onTapGesture {
                                             difficulty = star
                                         }
@@ -262,6 +262,19 @@ struct ShareSpotView: View {
         !coordinates.isEmpty &&
         !imageURL.isEmpty &&
         peakSeasonEnd > peakSeasonStart
+    }
+    
+    private func colorForDifficulty(_ difficulty: Int) -> Color {
+        switch difficulty {
+        case 1...2:
+            return .green
+        case 3:
+            return .orange
+        case 4...5:
+            return .red
+        default:
+            return .gray
+        }
     }
 }
 
