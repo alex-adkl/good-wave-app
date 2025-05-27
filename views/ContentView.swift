@@ -6,6 +6,69 @@
 //
 
 import SwiftUI
+import Foundation
+
+class WeatherViewModel: ObservableObject {
+    @Published var temperature: Double?
+    @Published var windKph: Double?
+    @Published var isLoading = false
+    @Published var error: String?
+
+    func fetchWeather(lat: Double, lon: Double) {
+        isLoading = true
+        let apiKey = "57016d3ef46f4950b3f113737252705"
+        let urlString = "https://api.weatherapi.com/v1/current.json?key=\(apiKey)&q=\(lat),\(lon)&lang=fr"
+        guard let url = URL(string: urlString) else { return }
+
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            DispatchQueue.main.async {
+                self.isLoading = false
+                if let data = data {
+                    do {
+                        let decoded = try JSONDecoder().decode(WeatherAPIResponse.self, from: data)
+                        self.temperature = decoded.current.temp_c
+                        self.windKph = decoded.current.wind_kph
+                    } catch {
+                        self.error = "Erreur de décodage météo"
+                    }
+                } else {
+                    self.error = "Erreur réseau météo"
+                }
+            }
+        }.resume()
+    }
+
+    func fetchWeatherByQuery(query: String) {
+        isLoading = true
+        let apiKey = "57016d3ef46f4950b3f113737252705"
+        let urlString = "https://api.weatherapi.com/v1/current.json?key=\(apiKey)&q=\(query)&lang=fr"
+        guard let url = URL(string: urlString) else { return }
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            DispatchQueue.main.async {
+                self.isLoading = false
+                if let data = data {
+                    do {
+                        let decoded = try JSONDecoder().decode(WeatherAPIResponse.self, from: data)
+                        self.temperature = decoded.current.temp_c
+                        self.windKph = decoded.current.wind_kph
+                    } catch {
+                        self.error = "Erreur de décodage météo (adresse)"
+                    }
+                } else {
+                    self.error = "Erreur réseau météo (adresse)"
+                }
+            }
+        }.resume()
+    }
+}
+
+struct WeatherAPIResponse: Decodable {
+    struct Current: Decodable {
+        let temp_c: Double
+        let wind_kph: Double
+    }
+    let current: Current
+}
 
 func colorForDifficulty(_ level: Int) -> Color {
     switch level {
@@ -25,6 +88,7 @@ struct ContentView: View {
     @ObservedObject var viewModel: SurfSpotViewModel
     @Environment(\.presentationMode) var presentationMode
     @State private var showFullMap = false
+    @StateObject private var weatherVM = WeatherViewModel()
 
     var body: some View {
         ScrollView {
@@ -107,6 +171,24 @@ struct ContentView: View {
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                             .padding(.top, 4)
+                        if let temp = weatherVM.temperature, let wind = weatherVM.windKph {
+                            HStack(spacing: 16) {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "thermometer")
+                                    Text("\(Int(temp))°C")
+                                }
+                                HStack(spacing: 4) {
+                                    Image(systemName: "wind")
+                                    Text("\(Int(wind)) km/h")
+                                }
+                            }
+                            .font(.subheadline)
+                            .foregroundColor(.blue)
+                        } else if weatherVM.isLoading {
+                            ProgressView().scaleEffect(0.7)
+                        } else if let error = weatherVM.error {
+                            Text(error).font(.caption).foregroundColor(.red)
+                        }
                     }
                     .padding(.top, 50)
                     VStack(spacing: 20) {
@@ -130,6 +212,24 @@ struct ContentView: View {
                                     .foregroundColor(.primary)
                             }
                         )
+                        if let temp = weatherVM.temperature, let wind = weatherVM.windKph {
+                            HStack(spacing: 16) {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "thermometer")
+                                    Text("\(Int(temp))°C")
+                                }
+                                HStack(spacing: 4) {
+                                    Image(systemName: "wind")
+                                    Text("\(Int(wind)) km/h")
+                                }
+                            }
+                            .font(.subheadline)
+                            .foregroundColor(.blue)
+                        } else if weatherVM.isLoading {
+                            ProgressView().scaleEffect(0.7)
+                        } else if let error = weatherVM.error {
+                            Text(error).font(.caption).foregroundColor(.red)
+                        }
                         if let url = URL(string: spot.forecastURL ?? "") {
                             Link(destination: url) {
                                 HStack {
@@ -154,6 +254,15 @@ struct ContentView: View {
         .background(Color.clear)
         .ignoresSafeArea(.all, edges: .top)
         .navigationBarHidden(true)
+        .onAppear {
+            if let (lat, lon) = extractLatLon(from: spot.geocode) {
+                weatherVM.fetchWeather(lat: lat, lon: lon)
+            } else if let address = spot.address.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed), !address.isEmpty {
+                weatherVM.fetchWeatherByQuery(query: address)
+            } else if let destination = spot.destination.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed), !destination.isEmpty {
+                weatherVM.fetchWeatherByQuery(query: destination)
+            }
+        }
         .sheet(isPresented: $showFullMap) {
             ZStack(alignment: .topTrailing) {
                 MapView()
@@ -190,5 +299,20 @@ struct InfoCard<Content: View>: View {
         .background(Color(.secondarySystemBackground))
         .cornerRadius(12)
     }
+}
+
+func extractLatLon(from geocode: String?) -> (Double, Double)? {
+    guard let geocode = geocode else { return nil }
+    let regex = try? NSRegularExpression(pattern: "(-?\\d+\\.\\d+),\\s*(-?\\d+\\.\\d+)")
+    if let match = regex?.firstMatch(in: geocode, range: NSRange(geocode.startIndex..., in: geocode)),
+       let latRange = Range(match.range(at: 1), in: geocode),
+       let lonRange = Range(match.range(at: 2), in: geocode) {
+        let lat = Double(geocode[latRange])
+        let lon = Double(geocode[lonRange])
+        if let lat = lat, let lon = lon {
+            return (lat, lon)
+        }
+    }
+    return nil
 }
 
