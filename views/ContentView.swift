@@ -171,24 +171,6 @@ struct ContentView: View {
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                             .padding(.top, 4)
-                        if let temp = weatherVM.temperature, let wind = weatherVM.windKph {
-                            HStack(spacing: 16) {
-                                HStack(spacing: 4) {
-                                    Image(systemName: "thermometer")
-                                    Text("\(Int(temp))°C")
-                                }
-                                HStack(spacing: 4) {
-                                    Image(systemName: "wind")
-                                    Text("\(Int(wind)) km/h")
-                                }
-                            }
-                            .font(.subheadline)
-                            .foregroundColor(.blue)
-                        } else if weatherVM.isLoading {
-                            ProgressView().scaleEffect(0.7)
-                        } else if let error = weatherVM.error {
-                            Text(error).font(.caption).foregroundColor(.red)
-                        }
                     }
                     .padding(.top, 50)
                     VStack(spacing: 20) {
@@ -212,24 +194,34 @@ struct ContentView: View {
                                     .foregroundColor(.primary)
                             }
                         )
-                        if let temp = weatherVM.temperature, let wind = weatherVM.windKph {
-                            HStack(spacing: 16) {
-                                HStack(spacing: 4) {
-                                    Image(systemName: "thermometer")
-                                    Text("\(Int(temp))°C")
-                                }
-                                HStack(spacing: 4) {
-                                    Image(systemName: "wind")
-                                    Text("\(Int(wind)) km/h")
+                        InfoCard(
+                            title: "Live Weather",
+                            icon: "cloud.sun.fill",
+                            content: {
+                                Group {
+                                    if let temp = weatherVM.temperature, let wind = weatherVM.windKph {
+                                        HStack(spacing: 16) {
+                                            HStack(spacing: 4) {
+                                                Image(systemName: "thermometer")
+                                                Text("\(Int(temp))°C")
+                                            }
+                                            HStack(spacing: 4) {
+                                                Image(systemName: "wind")
+                                                Text("\(Int(wind)) km/h")
+                                            }
+                                        }
+                                        .font(.subheadline)
+                                        .foregroundColor(.blue)
+                                    } else if weatherVM.isLoading {
+                                        ProgressView().scaleEffect(0.7)
+                                    } else if let error = weatherVM.error {
+                                        Text(error).font(.caption).foregroundColor(.red)
+                                    } else {
+                                        Text("Aucune donnée météo").font(.caption).foregroundColor(.gray)
+                                    }
                                 }
                             }
-                            .font(.subheadline)
-                            .foregroundColor(.blue)
-                        } else if weatherVM.isLoading {
-                            ProgressView().scaleEffect(0.7)
-                        } else if let error = weatherVM.error {
-                            Text(error).font(.caption).foregroundColor(.red)
-                        }
+                        )
                         if let url = URL(string: spot.forecastURL ?? "") {
                             Link(destination: url) {
                                 HStack {
