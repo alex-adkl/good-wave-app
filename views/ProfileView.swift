@@ -94,20 +94,6 @@ struct ProfileView: View {
                 }
             }
             .background(Color.white)
-            .navigationBarHidden(true)
-            .simultaneousGesture(
-                DragGesture()
-                    .onChanged { _ in
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            showTabBar = false
-                        }
-                    }
-                    .onEnded { _ in
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            showTabBar = true
-                        }
-                    }
-            )
         }
     }
 }

@@ -22,182 +22,178 @@ struct ShareSpotView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(spacing: 20) {
-                    VStack {
-                        if let url = URL(string: imageURL), !imageURL.isEmpty {
-                            AsyncImage(url: url) { phase in
-                                switch phase {
-                                case .empty:
-                                    ProgressView()
-                                        .frame(height: 200)
-                                        .frame(maxWidth: .infinity)
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .scaledToFill()
+            VStack(spacing: 0) {
+                HStack {
+                    Text("Share Spot")
+                        .font(.largeTitle)
+                        .bold()
+                        .padding(.horizontal)
+                    Spacer()
+                }
+                .padding(.top)
+                ScrollView {
+                    VStack(spacing: 20) {
+                        VStack {
+                            if let url = URL(string: imageURL), !imageURL.isEmpty {
+                                AsyncImage(url: url) { phase in
+                                    switch phase {
+                                    case .empty:
+                                        ProgressView()
+                                            .frame(height: 200)
+                                            .frame(maxWidth: .infinity)
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(height: 200)
+                                            .frame(maxWidth: .infinity)
+                                            .cornerRadius(16)
+                                            .clipped()
+                                    case .failure:
+                                        ZStack {
+                                            Color(.systemGray6)
+                                            Image(systemName: "photo")
+                                                .font(.system(size: 40))
+                                                .foregroundColor(.gray)
+                                            Text("Invalid URL")
+                                                .foregroundColor(.gray)
+                                                .offset(y: 40)
+                                        }
                                         .frame(height: 200)
                                         .frame(maxWidth: .infinity)
                                         .cornerRadius(16)
-                                        .clipped()
-                                case .failure:
-                                    ZStack {
-                                        Color(.systemGray6)
-                                        Image(systemName: "photo")
-                                            .font(.system(size: 40))
-                                            .foregroundColor(.gray)
-                                        Text("Invalid URL")
-                                            .foregroundColor(.gray)
-                                            .offset(y: 40)
+                                    @unknown default:
+                                        EmptyView()
                                     }
-                                    .frame(height: 200)
-                                    .frame(maxWidth: .infinity)
-                                    .cornerRadius(16)
-                                @unknown default:
-                                    EmptyView()
                                 }
-                            }
-                        } else {
-                            ZStack {
-                                Color(.systemGray6)
-                                Image(systemName: "photo")
-                                    .font(.system(size: 40))
-                                    .foregroundColor(.gray)
-                                Text("Paste image URL below")
-                                    .foregroundColor(.gray)
-                                    .offset(y: 40)
-                            }
-                            .frame(height: 200)
-                            .frame(maxWidth: .infinity)
-                            .cornerRadius(16)
-                        }
-                    }
-                    .padding(.horizontal)
-                    
-                    VStack(spacing: 16) {
-                        VStack(alignment: .leading) {
-                            Text("Image URL")
-                                .font(.headline)
-                            TextField("https://...", text: $imageURL)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .padding(.vertical, 8)
-                        }
-                        
-                        VStack(alignment: .leading) {
-                            Text("Spot Name")
-                                .font(.headline)
-                            TextField("Enter spot name", text: $spotName)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .padding(.vertical, 8)
-                        }
-                        
-                        VStack(alignment: .leading) {
-                            Text("Location")
-                                .font(.headline)
-                            TextField("Address", text: $location)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .padding(.vertical, 8)
-                        }
-                        
-                        VStack(alignment: .leading) {
-                            Text("Country")
-                                .font(.headline)
-                            TextField("Country", text: $country)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .padding(.vertical, 8)
-                        }
-                        
-                        VStack(alignment: .leading) {
-                            Text("Coordinates")
-                                .font(.headline)
-                            TextField("Latitude, Longitude", text: $coordinates)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .padding(.vertical, 8)
-                        }
-                        
-                        VStack(alignment: .leading) {
-                            Text("Difficulty Level")
-                                .font(.headline)
-                            HStack {
-                                ForEach(1...5, id: \.self) { star in
-                                    Image(systemName: star <= difficulty ? "star.fill" : "star")
-                                        .foregroundColor(colorForDifficulty(difficulty))
-                                        .onTapGesture {
-                                            difficulty = star
-                                        }
+                            } else {
+                                ZStack {
+                                    Color(.systemGray6)
+                                    Image(systemName: "photo")
+                                        .font(.system(size: 40))
+                                        .foregroundColor(.gray)
+                                    Text("Paste image URL below")
+                                        .foregroundColor(.gray)
+                                        .offset(y: 40)
                                 }
+                                .frame(height: 200)
+                                .frame(maxWidth: .infinity)
+                                .cornerRadius(16)
                             }
-                            .padding(.vertical, 8)
                         }
+                        .padding(.horizontal)
                         
-                        VStack(alignment: .leading) {
-                            Text("Peak Season")
-                                .font(.headline)
-                            HStack {
-                                DatePicker("Start", selection: $peakSeasonStart, displayedComponents: .date)
-                                DatePicker("End", selection: $peakSeasonEnd, displayedComponents: .date)
+                        VStack(spacing: 16) {
+                            VStack(alignment: .leading) {
+                                Text("Image URL")
+                                    .font(.headline)
+                                TextField("https://...", text: $imageURL)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    .padding(.vertical, 8)
                             }
-                            .padding(.vertical, 8)
-                        }
-                        
-                        VStack(alignment: .leading) {
-                            Text("Surf Forecast")
-                                .font(.headline)
-                            TextField("https://", text: $websiteLink)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .padding(.vertical, 8)
-                        }
-                        
-                        VStack(alignment: .leading) {
-                            Text("Spot Type")
-                                .font(.headline)
-                            Picker("Select type", selection: $selectedType) {
-                                ForEach(spotTypes, id: \.self) { type in
-                                    Text(type).tag(type)
+                            
+                            VStack(alignment: .leading) {
+                                Text("Spot Name")
+                                    .font(.headline)
+                                TextField("Enter spot name", text: $spotName)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    .padding(.vertical, 8)
+                            }
+                            
+                            VStack(alignment: .leading) {
+                                Text("Location")
+                                    .font(.headline)
+                                TextField("Address", text: $location)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    .padding(.vertical, 8)
+                            }
+                            
+                            VStack(alignment: .leading) {
+                                Text("Country")
+                                    .font(.headline)
+                                TextField("Country", text: $country)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    .padding(.vertical, 8)
+                            }
+                            
+                            VStack(alignment: .leading) {
+                                Text("Coordinates")
+                                    .font(.headline)
+                                TextField("Latitude, Longitude", text: $coordinates)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    .padding(.vertical, 8)
+                            }
+                            
+                            VStack(alignment: .leading) {
+                                Text("Difficulty Level")
+                                    .font(.headline)
+                                HStack {
+                                    ForEach(1...5, id: \.self) { star in
+                                        Image(systemName: star <= difficulty ? "star.fill" : "star")
+                                            .foregroundColor(colorForDifficulty(difficulty))
+                                            .onTapGesture {
+                                                difficulty = star
+                                            }
+                                    }
                                 }
+                                .padding(.vertical, 8)
                             }
-                            .pickerStyle(SegmentedPickerStyle())
-                            .padding(.vertical, 8)
+                            
+                            VStack(alignment: .leading) {
+                                Text("Peak Season")
+                                    .font(.headline)
+                                HStack {
+                                    DatePicker("Start", selection: $peakSeasonStart, displayedComponents: .date)
+                                    DatePicker("End", selection: $peakSeasonEnd, displayedComponents: .date)
+                                }
+                                .padding(.vertical, 8)
+                            }
+                            
+                            VStack(alignment: .leading) {
+                                Text("Surf Forecast")
+                                    .font(.headline)
+                                TextField("https://", text: $websiteLink)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    .padding(.vertical, 8)
+                            }
+                            
+                            VStack(alignment: .leading) {
+                                Text("Spot Type")
+                                    .font(.headline)
+                                Picker("Select type", selection: $selectedType) {
+                                    ForEach(spotTypes, id: \.self) { type in
+                                        Text(type).tag(type)
+                                    }
+                                }
+                                .pickerStyle(SegmentedPickerStyle())
+                                .padding(.vertical, 8)
+                            }
                         }
-                    }
-                    .padding(.horizontal)
-                    
-                    Button(action: submitSpot) {
-                        if isSubmitting {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        } else {
-                            Text("Share Spot")
-                                .font(.headline)
-                                .foregroundColor(.white)
+                        .padding(.horizontal)
+                        
+                        Button(action: submitSpot) {
+                            if isSubmitting {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            } else {
+                                Text("Share Spot")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                            }
                         }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.black)
+                        .cornerRadius(12)
+                        .disabled(isSubmitting || !isFormValid)
+                        .opacity(isFormValid ? 1.0 : 0.5)
+                        .padding(.horizontal)
+                        .padding(.top, 20)
+                        .padding(.bottom, 60)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.black)
-                    .cornerRadius(12)
-                    .disabled(isSubmitting || !isFormValid)
-                    .opacity(isFormValid ? 1.0 : 0.5)
-                    .padding(.horizontal)
-                    .padding(.top, 20)
-                    .padding(.bottom, 60)
+                    .padding(.vertical)
                 }
-                .padding(.vertical)
             }
-            .simultaneousGesture(
-                DragGesture()
-                    .onChanged { _ in
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            showTabBar = false
-                        }
-                    }
-                    .onEnded { _ in
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            showTabBar = true
-                        }
-                    }
-            )
-            .navigationTitle("Share Spot")
             .alert(isPresented: $showAlert) {
                 Alert(
                     title: Text("Message"),
