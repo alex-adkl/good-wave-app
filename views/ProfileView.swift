@@ -76,7 +76,7 @@ struct ProfileView: View {
                                 Text("REFER YOUR FRIENDS")
                                     .font(.subheadline)
                                     .fontWeight(.semibold)
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.black)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 17)
                                     .background(

@@ -14,40 +14,92 @@ struct ContentView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                // Header with map and image
+                // ZStack pour overlay boutons sur la photo
+                ZStack(alignment: .top) {
+                    // Photo du spot en rectangle
+                    if let url = URL(string: spot.photoURL) {
+                        AsyncImageView(url: url, placeholder: "photo")
+                            .frame(height: 250)
+                    }
+                    // Boutons overlay
+                    HStack {
+                        // Bouton retour
+                        Button(action: {
+                            presentationMode.wrappedValue.dismiss()
+                        }) {
+                            Image(systemName: "arrow.left")
+                                .font(.system(size: 22, weight: .medium))
+                                .foregroundColor(.black)
+                                .padding()
+                                .background(Color.white.opacity(0.6))
+                                .clipShape(Circle())
+                        }
+                        Spacer()
+                        // Bouton partage
+                        Button(action: {
+                            // Action de partage à compléter
+                        }) {
+                            Image(systemName: "square.and.arrow.up")
+                                .font(.system(size: 20, weight: .medium))
+                                .foregroundColor(.black)
+                                .padding()
+                                .background(Color.white.opacity(0.6))
+                                .clipShape(Circle())
+                        }
+                        // Bouton favori
+                        Button(action: {
+                            // Action favori à compléter
+                        }) {
+                            Image(systemName: "heart")
+                                .font(.system(size: 20, weight: .medium))
+                                .foregroundColor(.black)
+                                .padding()
+                                .background(Color.white.opacity(0.6))
+                                .clipShape(Circle())
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 15)
+                    // Barre blanche épaisse, toute largeur, au niveau du cercle avec la carte
+                    VStack {
+                        RoundedRectangle(cornerRadius: 24, style: .continuous)
+                            .fill(Color.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 40)
+                            .padding(.horizontal, 0)
+                            .padding(.top, 250 - 12) // 250 = hauteur de la photo, 12 = moitié de la hauteur de la barre
+                        Spacer()
+                    }
+                }
+                .ignoresSafeArea(.all, edges: .top)
+                // Cercle par-dessus : carte
                 ZStack(alignment: .bottom) {
+                    Color.clear.frame(height: 0) // pour garder la structure du ZStack
                     MapView()
-                        .frame(height: 250)
-                        .ignoresSafeArea(edges: .top)
-                    
-                    CircleImage(url: URL(string: spot.photoURL))
                         .frame(width: 120, height: 120)
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(Color.clear, lineWidth: 1)
+                        )
                         .offset(y: 60)
                         .shadow(radius: 7)
                 }
-                
-                // Main content
                 VStack(spacing: 24) {
-                    // Header with name and location
                     VStack(spacing: 8) {
                         Text(spot.destination)
                             .font(.system(size: 32, weight: .bold))
                             .foregroundColor(.primary)
-                        
                         Text(spot.country)
                             .font(.headline)
                             .foregroundColor(.secondary)
-                        
                         Text(spot.surfBreak.joined(separator: " • "))
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                             .padding(.top, 4)
                     }
                     .padding(.top, 70)
-                    
-                    // Main information section
                     VStack(spacing: 20) {
-                        // Difficulty
                         InfoCard(
                             title: "Difficulty Level",
                             icon: "crown.fill",
@@ -60,8 +112,6 @@ struct ContentView: View {
                                 }
                             }
                         )
-                        
-                        // Season
                         InfoCard(
                             title: "Peak Season",
                             icon: "figure.surfing",
@@ -70,8 +120,6 @@ struct ContentView: View {
                                     .foregroundColor(.primary)
                             }
                         )
-                        
-                        // Forecast link
                         if let url = URL(string: spot.forecastURL ?? "") {
                             Link(destination: url) {
                                 HStack {
@@ -90,15 +138,15 @@ struct ContentView: View {
                     }
                     .padding(.horizontal)
                 }
-                .background(Color(.systemBackground))
                 .padding(.bottom, 90)
             }
         }
-        .ignoresSafeArea(edges: .top)
+        .background(Color.clear)
+        .ignoresSafeArea(.all, edges: .top)
+        .navigationBarHidden(true)
     }
 }
 
-// Reusable component for info cards
 struct InfoCard<Content: View>: View {
     let title: String
     let icon: String

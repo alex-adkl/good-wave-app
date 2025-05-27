@@ -8,82 +8,45 @@ import SwiftUI
 
 struct SpotTypeSelector: View {
     @Binding var selectedType: String?
-    
+    // Tableau des types
+    let types: [(icon: String, label: String)] = [
+        ("fish", "Reef Break"),
+        ("beach.umbrella", "Beach Break"),
+        ("button.angledtop.vertical.left", "Point Break"),
+        ("water.waves", "Outer Banks")
+    ]
+    // Index courant
+    @State private var currentIndex: Int = 0
+
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 8) {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 40) {
-                VStack {
-                    Image(systemName: "fish")
-                    Text("Reef Break")
-                        .padding(.bottom)
-                        .overlay(
-                            Rectangle()
-                                .frame(height: 3)
-                                    .foregroundColor(selectedType == "Reef Break" ? .black : .clear)
-                                .padding(.top,3),
-                            alignment: .bottom
-                        )
-                }
-                .padding(.leading, 10)
-                .foregroundColor(selectedType == "Reef Break" ? .black : .gray)
-                .onTapGesture {
-                    selectedType = selectedType == "Reef Break" ? nil : "Reef Break"
-                }
-
-                VStack {
-                    Image(systemName: "beach.umbrella")
-                    Text("Beach Break")
-                        .padding(.bottom)
-                            .overlay(
-                                Rectangle()
-                                    .frame(height: 3)
-                                    .foregroundColor(selectedType == "Beach Break" ? .black : .clear)
-                                    .padding(.top,3),
-                                alignment: .bottom
-                            )
-                }
-                    .foregroundColor(selectedType == "Beach Break" ? .black : .gray)
-                    .onTapGesture {
-                        selectedType = selectedType == "Beach Break" ? nil : "Beach Break"
-                    }
-
-                VStack {
-                    Image(systemName: "button.angledtop.vertical.left")
-                    Text("Point Break")
-                        .padding(.bottom)
-                            .overlay(
-                                Rectangle()
-                                    .frame(height: 3)
-                                    .foregroundColor(selectedType == "Point Break" ? .black : .clear)
-                                    .padding(.top,3),
-                                alignment: .bottom
-                            )
-                }
-                    .foregroundColor(selectedType == "Point Break" ? .black : .gray)
-                    .onTapGesture {
-                        selectedType = selectedType == "Point Break" ? nil : "Point Break"
-                    }
-                    
-                    VStack {
-                        Image(systemName: "water.waves")
-                        Text("Outer Banks")
-                            .padding(.bottom)
-                            .overlay(
-                                Rectangle()
-                                    .frame(height: 3)
-                                    .foregroundColor(selectedType == "Outer Banks" ? .black : .clear)
-                                    .padding(.top,3),
-                                alignment: .bottom
-                            )
-                    }
-                    .foregroundColor(selectedType == "Outer Banks" ? .black : .gray)
-                    .onTapGesture {
-                        selectedType = selectedType == "Outer Banks" ? nil : "Outer Banks"
+                    ForEach(types.indices, id: \ .self) { index in
+                        VStack {
+                            Image(systemName: types[index].icon)
+                            Text(types[index].label)
+                                .padding(.bottom)
+                        }
+                        .padding(.leading, index == 0 ? 10 : 0)
+                        .foregroundColor(selectedType == types[index].label ? .black : .gray)
+                        .onTapGesture {
+                            selectedType = selectedType == types[index].label ? nil : types[index].label
+                            currentIndex = index
+                        }
                     }
                 }
                 .padding(.horizontal)
             }
+            // Points d'indication
+            HStack(spacing: 8) {
+                ForEach(types.indices, id: \ .self) { index in
+                    Circle()
+                        .fill(index == currentIndex ? Color.black : Color.gray.opacity(0.3))
+                        .frame(width: 8, height: 8)
+                }
+            }
+            .padding(.top, 2)
         }
     }
 }
