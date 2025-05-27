@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Foundation
+import MapKit
 
 class WeatherViewModel: ObservableObject {
     @Published var temperature: Double?
@@ -83,12 +84,28 @@ func colorForDifficulty(_ level: Int) -> Color {
     }
 }
 
+class GeocodingViewModel: ObservableObject {
+    @Published var coordinate: CLLocationCoordinate2D? = nil
+
+    func geocode(address: String) {
+        let geocoder = CLGeocoder()
+        geocoder.geocodeAddressString(address) { placemarks, error in
+            if let location = placemarks?.first?.location {
+                DispatchQueue.main.async {
+                    self.coordinate = location.coordinate
+                }
+            }
+        }
+    }
+}
+
 struct ContentView: View {
     let spot: SurfSpot
     @ObservedObject var viewModel: SurfSpotViewModel
     @Environment(\.presentationMode) var presentationMode
     @State private var showFullMap = false
     @StateObject private var weatherVM = WeatherViewModel()
+    @StateObject private var geoVM = GeocodingViewModel()
 
     var body: some View {
         ScrollView {
@@ -146,18 +163,22 @@ struct ContentView: View {
                 .ignoresSafeArea(.all, edges: .top)
                 ZStack(alignment: .bottom) {
                     Color.clear.frame(height: 0)
-                    MapView()
-                        .frame(width: 120, height: 120)
-                        .clipShape(Circle())
-                        .overlay(
-                            Circle()
-                                .stroke(Color.clear, lineWidth: 1)
-                        )
-                        .offset(y: 30)
-                        .shadow(radius: 7)
-                        .onTapGesture {
-                            showFullMap = true
-                        }
+                    if let coord = geoVM.coordinate {
+                        MapView(latitude: coord.latitude, longitude: coord.longitude)
+                            .frame(width: 120, height: 120)
+                            .clipShape(Circle())
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.clear, lineWidth: 1)
+                            )
+                            .offset(y: 30)
+                            .shadow(radius: 7)
+                            .onTapGesture {
+                                showFullMap = true
+                            }
+                    } else {
+                        ProgressView().frame(width: 120, height: 120)
+                    }
                 }
                 VStack(spacing: 24) {
                     VStack(spacing: 8) {
@@ -247,6 +268,8 @@ struct ContentView: View {
         .ignoresSafeArea(.all, edges: .top)
         .navigationBarHidden(true)
         .onAppear {
+            let address = !spot.address.isEmpty ? spot.address : spot.destination
+            geoVM.geocode(address: address)
             if let (lat, lon) = extractLatLon(from: spot.geocode) {
                 weatherVM.fetchWeather(lat: lat, lon: lon)
             } else if let address = spot.address.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed), !address.isEmpty {
@@ -257,8 +280,13 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showFullMap) {
             ZStack(alignment: .topTrailing) {
-                MapView()
-                    .edgesIgnoringSafeArea(.all)
+                if let coord = geoVM.coordinate {
+                    MapView(latitude: coord.latitude, longitude: coord.longitude)
+                        .edgesIgnoringSafeArea(.all)
+                } else {
+                    MapView(latitude: 48.8566, longitude: 2.3522)
+                        .edgesIgnoringSafeArea(.all)
+                }
                 Button(action: {
                     showFullMap = false
                 }) {
